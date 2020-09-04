@@ -84,11 +84,22 @@ function create() {
   
   //animations needed for timing
   //
+  
    var frameNamesSkeletonSpawn =  this.anims.generateFrameNames('skeletonSprites',{
         start: 0, end: 16, zeroPad: 2, prefix: 'skeleton-spawn-', suffix: '.png'
     });
   
   this.anims.create({key: 'skeletonSpawn', frames:frameNamesSkeletonSpawn, frameRate:10, repeat: 0});
+  //player roll
+  
+    var frameNamesPlayerRoll = this.anims.generateFrameNames('playerSprites', {
+                         start: 0, end: 5, zeroPad: 0,
+                         prefix: 'roll_roll_', suffix: '.png'
+                     });
+  
+   this.anims.create({ key: 'playerRoll', frames: frameNamesPlayerRoll, frameRate: 10, repeat: 0});
+  
+  
   
   
 
@@ -101,6 +112,12 @@ function create() {
       playerId: socket.id,
       angle:0,
       moving:false,
+      roll:false,
+      hit:false,
+      hearts:0,
+      alive:true,
+      respawn:false,
+      coins:0,
       input:{
       up:false,
       down:false,
@@ -112,8 +129,7 @@ function create() {
       pointerX:0,
       pointerY:0  
       }
-        
-      
+
     };
     // add player to server
     addPlayer(self, players[socket.id]);
@@ -393,11 +409,6 @@ function update(time) {
         if (player.alive)
     
       {
-    
-       player.angle=inputInfo.angle;
-       player.moving=false;
-       player.body.setVelocity(0);
-    
         if (player.invunerable)
           {
             if (player.checkInvunerable)
@@ -415,33 +426,249 @@ function update(time) {
               }
            
           }
-    
-         
         
-         
-        if (inputInfo.up)
+         if (!player.roll)
+          {
+            
+             player.angle=inputInfo.angle;
+             player.moving=false;
+             player.body.setVelocity(0);
+            
+        
+        
+            
+         if (inputInfo.up)
         {
-          player.moving=true;
-          player.body.setVelocityY(-player.speed);
+   
+          if (inputInfo.up && inputInfo.mouseRight && (!inputInfo.left && !inputInfo.right))
+            {
+            
+               player.roll=true;
+               player.body.setVelocityY(-player.rollspeed); 
+              
+                player.playerBody.anims.play('playerRoll',false).once('animationcomplete', ()=>{
+                player.roll=false;
+                 }); 
+              
+              
+
+            }
           
+     
+         else if (inputInfo.up && inputInfo.left && inputInfo.mouseRight)
+            {
+              console.log(player.roll);
+                //roll left and up 
+              console.log('up and left');
+                player.roll=true;
+                player.body.setVelocityY(-player.rollspeed);
+                player.body.setVelocityX(-player.rollspeed);
+    
+            
+            //play roll 
+            player.playerBody.anims.play('playerRoll',false).once('animationcomplete', ()=>{
+                player.roll=false;
+            }); 
+    
+          }
+            
+         else if (inputInfo.up && inputInfo.right && (inputInfo.mouseRight))
+            {
+                //roll right and up
+              console.log('up and right');
+                
+                player.roll=true;
+                player.body.setVelocityY(-player.rollspeed);
+                player.body.setVelocityX(player.rollspeed);
+    
+            
+            //play roll 
+            player.playerBody.anims.play('playerRoll',false).once('animationcomplete', ()=>{
+                player.roll=false;
+            }); 
+    
+          }   
+          
+          else 
+            {
+             
+              player.moving=true;
+              player.body.setVelocityY(-player.speed);
+
+            }
+
         }
+        
+        //Player not rolling
+        
+       
+            
+         
+       
     
         if (inputInfo.down)
           {
-           player.moving=true;
-           player.body.setVelocityY(player.speed);
+              if (inputInfo.down && (inputInfo.mouseRight) && !(inputInfo.left && inputInfo.right))
+            {
+               player.roll=true;
+               player.body.setVelocityY(player.rollspeed); 
+              
+                player.playerBody.anims.play('playerRoll',false).once('animationcomplete', ()=>{
+                player.roll=false;
+                 }); 
+
+
+            }
+          
+          else if (inputInfo.down && inputInfo.left && (inputInfo.mouseRight))
+            {
+                //roll left and up    
+                player.roll=true;
+                player.body.setVelocityY(player.rollspeed);
+                player.body.setVelocityX(-player.rollspeed);
+    
+            
+            //play roll 
+            player.playerBody.anims.play('playerRoll',false).once('animationcomplete', ()=>{
+                player.roll=false;
+            }); 
+    
+          }
+            
+         else if (inputInfo.down && inputInfo.right && (inputInfo.mouseRight))
+            {
+                //roll right and up
+                
+                player.roll=true;
+                player.body.setVelocityY(-player.rollspeed);
+                player.body.setVelocityX(player.rollspeed);
+    
+            
+            //play roll 
+            player.playerBody.anims.play('playerRoll',false).once('animationcomplete', ()=>{
+                player.roll=false;
+            }); 
+    
+          }   
+          
+          else
+            {
+              player.moving=true;
+              player.body.setVelocityY(player.speed);
+
+            }
+            
             
           }
+            
+            
+            
         if (inputInfo.left)
           {
-           player.moving=true;
-           player.body.setVelocityX(-player.speed); 
+            
+              if (inputInfo.left && (inputInfo.mouseRight) && (!inputInfo.up && !inputInfo.down))
+            {
+               player.roll=true;
+               player.body.setVelocityX(-player.rollspeed); 
+              
+                player.playerBody.anims.play('playerRoll',false).once('animationcomplete', ()=>{
+                player.roll=false;
+                 }); 
+              
+              
+
+            }
+          
+     /*
+          else if (inputInfo.left && inputInfo.up && (inputInfo.mouseRight))
+            {
+                //roll left and up    
+                player.roll=true;
+                player.body.setVelocityY(-player.rollspeed);
+                player.body.setVelocityX(-player.rollspeed);
+    
+            
+            //play roll 
+            player.playerBody.anims.play('playerRoll',false).once('animationcomplete', ()=>{
+                player.roll=false;
+            }); 
+    
+          }
+            
+         else if (inputInfo.left && inputInfo.down && (inputInfo.mouseRight))
+            {
+                //roll right and up
+                
+                player.roll=true;
+                player.body.setVelocityY(player.rollspeed);
+                player.body.setVelocityX(-player.rollspeed);
+    
+            
+            //play roll 
+            player.playerBody.anims.play('playerRoll',false).once('animationcomplete', ()=>{
+                player.roll=false;
+            }); 
+    
+          }   
+          */
+          else
+            {
+              player.moving=true;
+              player.body.setVelocityX(-player.speed);
+            }
             
           }
           if (inputInfo.right)
             {
+               if (inputInfo.right && (inputInfo.mouseRight) && (!inputInfo.up && !inputInfo.down))
+            {
+               player.roll=true;
+               player.body.setVelocityX(player.rollspeed); 
+              
+                player.playerBody.anims.play('playerRoll',false).once('animationcomplete', ()=>{
+                player.roll=false;
+                 }); 
+
+            }
+          
+     /*
+          else if (inputInfo.right && inputInfo.up && (inputInfo.mouseRight))
+            {
+                //roll left and up    
+                player.roll=true;
+                player.body.setVelocityY(-player.rollspeed);
+                player.body.setVelocityX(player.rollspeed);
+    
+            
+            //play roll 
+            player.playerBody.anims.play('playerRoll',false).once('animationcomplete', ()=>{
+                player.roll=false;
+            }); 
+    
+          }
+            
+         else if (inputInfo.right && inputInfo.down && (inputInfo.mouseRight))
+            {
+                //roll right and up
+                
+                player.roll=true;
+                player.body.setVelocityY(player.rollspeed);
+                player.body.setVelocityX(player.rollspeed);
+    
+            
+            //play roll 
+            player.playerBody.anims.play('playerRoll',false).once('animationcomplete', ()=>{
+                player.roll=false;
+            }); 
+    
+          }   
+          */
+          else
+            {
               player.moving=true;
               player.body.setVelocityX(player.speed);
+
+            }
               
             }
     
@@ -463,7 +690,9 @@ function update(time) {
                x:newBullet.x,
                y:newBullet.y,
                id:newBullet.id,
-               angle:inputInfo.angle    
+               angle:inputInfo.angle,
+               hitX:0,
+               hitY:0  
              }; 
              
 
@@ -474,6 +703,11 @@ function update(time) {
             }
               
             }
+            
+          }
+      
+        
+        //
       }
     
     players[player.playerId].x = player.x;
@@ -486,12 +720,12 @@ function update(time) {
     players[player.playerId].alive=player.alive;
     players[player.playerId].respawn=player.respawn;
     players[player.playerId].coins=player.coins;
+    players[player.playerId].roll=player.roll;
     
     //players[player.playerId].rotation = player.rotation;
     
     player.hit=false;
     player.respawn=false;
-      
   });
   
   //this.physics.world.wrap(this.players, 5);

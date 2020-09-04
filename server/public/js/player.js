@@ -1,89 +1,81 @@
-class Player extends Phaser.GameObjects.Container{
-    constructor(scene,x,y,id)
-    {
-     
-    super(scene,x,y);  
+class Player extends Phaser.GameObjects.Container {
+  constructor(scene, x, y, id) {
+
+    super(scene, x, y);
     scene.add.existing(this);
-    this.playerId=id;  
-    this.moving=false;
-    this.respawn=false;
-    this.playDeathAnimation=true;  
-    this.playRollAnimation=false;
-    this.alive=true;  
-    this.hit=false;
-    this.showInvun=true;
-    this.coins=0;
-    this.health=150;
-    this.fireTime=0;
-    this.fireDelay=300;
-    this.roll=false;
-    this.angle=0;
-    this.invunerable=false;
+    this.playerId = id;
+    this.moving = false;
+    this.respawn = false;
+    this.playDeathAnimation = true;
+    this.playRollAnimation = true;
+    this.alive = true;
+    this.hit = false;
+    this.showInvun = true;
+    this.coins = 0;
+    this.health = 150;
+    this.fireTime = 0;
+    this.fireDelay = 300;
+    this.roll = false;
+    this.angle = 0;
+    this.invunerable = false;
     this.hearts;
-    this.totalHearts=3;  
-    this.setSize(10,15);
-    this.inputInfo;  
-   // scene.physics.world.enable(this);
+    this.totalHearts = 3;
+    this.setSize(10, 15);
+    this.inputInfo;
+    // scene.physics.world.enable(this);
 
-    this.gunSprite=scene.add.sprite(0,0,'playerSprites','main gun_Gun_0.png'); 
-  
-    this.gunSprite.setSize(10,15,true);
+    this.gunSprite = scene.add.sprite(0, 0, 'playerSprites', 'main gun_Gun_0.png');
 
-    this.playerBody=scene.add.sprite(0,0,'playerSprites','run_run_0.png');
-    this.playerBody.setSize(10,15,true);
+    this.gunSprite.setSize(10, 15, true);
 
-   
+    this.playerBody = scene.add.sprite(0, 0, 'playerSprites', 'run_run_0.png');
+    this.playerBody.setSize(10, 15, true);
+
+
     this.add(this.playerBody);
     this.add(this.gunSprite);
 
+  }
+
+  updatePlayer(time, scene) {
+
+    if (this.hit) {
+      if (this.showInvun) {
+
+        if (this === scene.newPlayerLocal) {
+
+          updateHearts(scene, scene.newPlayerLocal);
+        }
+
+        this.showInvun = false;
+        if (this == scene.newPlayerLocal) {
+          scene.cameras.main.shake(200, 0.02); //shake screen    
+
+        }
+        this.setAlpha(0); {
+          //run for 5 seconds
+          scene.tweens.add({
+            targets: this,
+            alpha: 1,
+            duration: 200,
+            ease: 'Linear',
+            repeat: 5,
+            onComplete: function(tween, player) {
+              //set player show invunerability to true
+              //show flashing again
+              player[0].showInvun = true;
+            }
+
+          });
+
+        }
+      }
     }
-  
-  updatePlayer(time,scene)
-  {
-        
-    if (this.hit)
-      {
-     if (this.showInvun)   
-     {
-       
-     if (this === scene.newPlayerLocal)
-       {
-    
-        updateHearts(scene,scene.newPlayerLocal);  
-       }
-       
-      this.showInvun=false;
-    if (this == scene.newPlayerLocal)
-      {
-      scene.cameras.main.shake(200, 0.02); //shake screen    
-      
-      }
-    this.setAlpha(0);
-    {
-       //run for 5 seconds
-    scene.tweens.add({
-    targets: this,
-    alpha: 1,
-    duration: 200,
-    ease: 'Linear',
-    repeat: 5,
-    onComplete: function(tween,player)
-      {
-        //set player show invunerability to true
-        //show flashing again
-        player[0].showInvun=true;
-      }
-
-    });
 
   }
-     }
-  }
-  
-}
 
 }
-  
+
 /*
     onHit(scene,player)
     {

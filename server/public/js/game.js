@@ -460,7 +460,7 @@ function create() {
            player.gunSprite.setRotation(player.angle);
            player.coins=players[id].coins;
           
-          
+          console.log(player.roll);
            //update target x // target y and duration since last update
            var duration = player.updateTime-player.lastUpdateTime;
            var targetX=players[id].x;
@@ -498,6 +498,7 @@ function create() {
           
           if (player.alive)
             {
+        
            if (player.lastUpdateTime===0)
               {
                 player.setPosition(targetX,targetY);
@@ -532,7 +533,7 @@ function create() {
               player.gunSprite.flipY=false;
 
             }
-          
+                
 /*
            if (player.roll)
         {
@@ -552,6 +553,22 @@ function create() {
       
         }
         */
+           if (player.roll) 
+             {
+            if (player.playRollAnimation)
+              {
+              player.playRollAnimation=false;
+              player.playerBody.anims.play('playerRoll',false).once('animationcomplete', ()=>{
+              player.playRollAnimation=true;
+
+            }); 
+            
+              }
+            
+             }
+        
+         else
+           {
         //if moving play move animation
         if (player.moving)
         {
@@ -562,9 +579,9 @@ function create() {
           //play idle animation
         {
             player.playerBody.anims.play('playerIdle',true);
-          
         
         }
+           }
         
         
             }
@@ -586,9 +603,11 @@ function update(time,delta,self) {
   if (this.newPlayerLocal && this.newPlayerLocal.alive)
     {
 
-   this.scoreText.setText(this.newPlayerLocal.coins);   
+   this.scoreText.setText(this.newPlayerLocal.coins);
+
    pointerMove(this,this.input.activePointer,this.cameras.main);
   
+      
    var inputInfo ={
          
      up:cursors.up.isDown,
@@ -601,10 +620,13 @@ function update(time,delta,self) {
      pointerX:this.input.activePointer.x+this.cameras.main.scrollX,
      pointerY:this.input.activePointer.y+this.cameras.main.scrollY
    }
+   
+   
     
  
 
   this.socket.emit('playerInput', inputInfo);
+    
       
     }
   
@@ -651,8 +673,3 @@ function update(time,delta,self) {
     }
 
 
-function updateRollStatus(self,player)
-{
-  self.socket.emit('rollAnimationFinished', player); 
-  
-}
