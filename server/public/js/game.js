@@ -469,6 +469,7 @@ function create() {
       self.players.getChildren().forEach(function (player) {
         if (players[id].playerId === player.playerId) {
           //player.setRotation(players[id].rotation);
+          var localTime = Date.now();
           
           //set new updates to playert
            player.updateTime=players[id].updateTime;
@@ -484,7 +485,10 @@ function create() {
           
          
            //update target x // target y and duration since last update
-           var duration = player.updateTime-player.lastUpdateTime;
+           var duration = localTime-player.updateTime;
+          
+          console.log(duration);
+          
            var targetX=players[id].x;
            var targetY=players[id].y;
           if (!player.alive)
@@ -521,10 +525,6 @@ function create() {
           if (player.alive)
             {
         
-           if (player.lastUpdateTime===0)
-              {
-                player.setPosition(targetX,targetY);
-              }
           //player in same position no tween
             if (targetX == player.x && targetY == player.y)
               {

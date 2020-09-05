@@ -26,6 +26,7 @@ class Player extends Phaser.GameObjects.Container{
     this.speed=75;
     this.rollspeed=100;  
     this.setSize(10,15);
+    this.updateTime=0;  
     this.inputInfo;  
     scene.physics.world.enable(this);
 

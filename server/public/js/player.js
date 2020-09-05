@@ -28,6 +28,7 @@ class Player extends Phaser.GameObjects.Container {
     this.playerName = scene.add.text(this.x,this.y-15,this.name);
     this.playerName.color="white";
     this.playerName.setFontSize(12);
+    this.playerName.setFontFamily('FreeMono', 'monospace');
     
     this.playerName.setOrigin(0.5,0.5);
     

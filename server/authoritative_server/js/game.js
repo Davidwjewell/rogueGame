@@ -135,6 +135,7 @@ function create() {
       alive:true,
       respawn:false,
       coins:0,
+      updateTime:0,
       input:{
       up:false,
       down:false,
@@ -737,11 +738,13 @@ function update(time) {
         //
       }
     
+    var updateTime = Date.now();
+    
     players[player.playerId].x = player.x;
     players[player.playerId].y = player.y;
     players[player.playerId].moving=player.moving;
     players[player.playerId].angle=player.angle;
-    players[player.playerId].updateTime = time;
+    players[player.playerId].updateTime = updateTime;
     players[player.playerId].hit=player.hit;
     players[player.playerId].hearts=player.hearts;
     players[player.playerId].alive=player.alive;
