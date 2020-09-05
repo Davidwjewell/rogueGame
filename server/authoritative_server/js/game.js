@@ -14,6 +14,8 @@ var coinSpawnTime=0;
 var coinIdCounter=0;
 
 
+
+
 const config = {
   type: Phaser.HEADLESS,
   parent: 'phaser-example',
@@ -105,11 +107,26 @@ function create() {
 
   io.on('connection', function (socket) {
     console.log('a user connected');
-    // create a new player and add it to our players object
+    //get user name 
+    socket.emit('inputName');
+    
+    
+    
+    
+    
+    socket.on('playerNameInput', function(playerName){
+      console.log('player name recieved');
+      
+      
+      
+      console.log(playerName);
+      
+        // create a new player and add it to our players object
     players[socket.id] = {
       x: Math.floor(Math.random() * 700) + 50,
       y: Math.floor(Math.random() * 500) + 50,
       playerId: socket.id,
+      name:playerName,
       angle:0,
       moving:false,
       roll:false,
@@ -131,13 +148,22 @@ function create() {
       }
 
     };
-    // add player to server
+      
+          // add player to server
     addPlayer(self, players[socket.id]);
     // send the players object to the new player
     socket.emit('currentPlayers', players);
     // update all other players of the new player
     socket.broadcast.emit('newPlayer', players[socket.id]);
    
+    
+      
+      
+      
+    });
+    
+    
+
 
     socket.on('disconnect', function () {
       console.log('user disconnected');
@@ -153,17 +179,18 @@ function create() {
     socket.on('playerInput', function (inputData) {
       handlePlayerInput(self, socket.id, inputData);
     });
-    
+    /*
     socket.on('rollAnimationFinished', function(playerRollFinished){
       self.players.getChildren().forEach((player)=>{
         if (player.playerId === playerRollFinished.playerId)
           {
             player.roll=false;
-            console.log('roll false');
+            
           }
       });
    
     });
+    */
   });
   
 }

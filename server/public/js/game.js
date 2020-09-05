@@ -11,7 +11,11 @@ forceSetTimeOut: true
     preload: preload,
     create: create,
     update: update
-  }
+  },
+  scale: {
+       //mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH
+    },
 };
 
 var game = new Phaser.Game(config);
@@ -30,7 +34,8 @@ function preload() {
 function create() {
 
   var self = this;
- 
+  //center game
+
   this.socket = io();
   this.players = this.add.group();
   this.bullets = this.add.group();
@@ -149,18 +154,35 @@ function create() {
 
   //this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' });
   //this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' });
+  
+  
+  this.socket.on('inputName', function(){
+    
+    var playerName = nameInput();
+    console.log(self);
+    
+    if (playerName)
+      {
+
+ 
+        self.socket.emit('playerNameInput', playerName);
+        
+      }
+    
+    
+  });
 
   this.socket.on('currentPlayers', function (players) {
     Object.keys(players).forEach(function (id) {
       if (players[id].playerId === self.socket.id) {
-        self.newPlayerLocal = new Player(self,players[id].x,players[id].y,players[id].playerId);
+        self.newPlayerLocal = new Player(self,players[id].x,players[id].y,players[id].playerId,players[id].name);
         self.players.add(self.newPlayerLocal);
         addHearts(self,self.newPlayerLocal,35,50);
        // displayPlayers(self, players[id], 'ship');
       } 
       else
         {
-          let newPlayer = new Player(self,players[id].x,players[id].y,players[id].playerId);
+          let newPlayer = new Player(self,players[id].x,players[id].y,players[id].playerId,players[id].name);
           self.players.add(newPlayer);
         }
     });
@@ -168,7 +190,7 @@ function create() {
 
   this.socket.on('newPlayer', function (playerInfo) {
     //displayPlayers(self, playerInfo, 'otherPlayer');
-     let newPlayer = new Player(self,playerInfo.x,playerInfo.y,playerInfo.playerId);
+     let newPlayer = new Player(self,playerInfo.x,playerInfo.y,playerInfo.playerId,playerInfo.name);
     self.players.add(newPlayer);
     
   });
@@ -215,7 +237,7 @@ function create() {
         
         self.enemies.add(newEnemySkeleton);
         
-        console.log(newEnemySkeleton);
+    
        
         
       }
@@ -460,7 +482,7 @@ function create() {
            player.gunSprite.setRotation(player.angle);
            player.coins=players[id].coins;
           
-          console.log(player.roll);
+         
            //update target x // target y and duration since last update
            var duration = player.updateTime-player.lastUpdateTime;
            var targetX=players[id].x;

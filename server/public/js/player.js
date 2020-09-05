@@ -1,9 +1,10 @@
 class Player extends Phaser.GameObjects.Container {
-  constructor(scene, x, y, id) {
+  constructor(scene, x, y, id, name) {
 
     super(scene, x, y);
     scene.add.existing(this);
     this.playerId = id;
+    this.name=name;
     this.moving = false;
     this.respawn = false;
     this.playDeathAnimation = true;
@@ -23,6 +24,13 @@ class Player extends Phaser.GameObjects.Container {
     this.setSize(10, 15);
     this.inputInfo;
     // scene.physics.world.enable(this);
+    
+    this.playerName = scene.add.text(this.x,this.y-15,this.name);
+    this.playerName.color="white";
+    this.playerName.setFontSize(12);
+    
+    this.playerName.setOrigin(0.5,0.5);
+    
 
     this.gunSprite = scene.add.sprite(0, 0, 'playerSprites', 'main gun_Gun_0.png');
 
@@ -31,13 +39,15 @@ class Player extends Phaser.GameObjects.Container {
     this.playerBody = scene.add.sprite(0, 0, 'playerSprites', 'run_run_0.png');
     this.playerBody.setSize(10, 15, true);
 
-
     this.add(this.playerBody);
     this.add(this.gunSprite);
 
   }
 
   updatePlayer(time, scene) {
+    
+    this.playerName.x=this.x;
+    this.playerName.y=this.y-15;
 
     if (this.hit) {
       if (this.showInvun) {
