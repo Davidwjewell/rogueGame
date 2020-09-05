@@ -470,7 +470,7 @@ function create() {
         if (players[id].playerId === player.playerId) {
           //player.setRotation(players[id].rotation);
           var localTime = Date.now();
-          
+     
           //set new updates to playert
            player.updateTime=players[id].updateTime;
            player.moving=players[id].moving;
@@ -485,10 +485,11 @@ function create() {
           
          
            //update target x // target y and duration since last update
-           var duration = localTime-player.updateTime;
+           var duration = (localTime-player.updateTime) / 100;
           
           console.log(duration);
-          
+  
+
            var targetX=players[id].x;
            var targetY=players[id].y;
           if (!player.alive)
