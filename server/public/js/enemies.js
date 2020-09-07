@@ -11,6 +11,7 @@ class SlimeEnemy extends Phaser.GameObjects.Sprite {
         this.checkHit=true;
         this.hitTime=0;
         this.flashTime=150;
+        this.lastUpdateTime=null;
     }
 
 
@@ -76,6 +77,7 @@ class SkeletonEnemy extends Phaser.GameObjects.Container{
     this.id=id;  
     this.moveDelay=1000;
     this.type='skeletonEnemy';
+    this.lastUpdateTime=null;  
     this.hit=false;
     this.checkHit=true;
     this.hitTime=0;
@@ -119,7 +121,6 @@ class SkeletonEnemy extends Phaser.GameObjects.Container{
   
   updateEnemy(time,scene)
   {
-    console.log('update skeleton');
     //iof spawn play animation
     if (this.spawning)
       {

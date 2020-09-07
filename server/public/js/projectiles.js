@@ -6,8 +6,7 @@ class Bullet extends Phaser.GameObjects.Sprite {
         this.id=id;
         this.targetX=x;
         this.targetY=y;
-        this.lastUpdateTime=0;
-        this.updateTime=0;
+        this.lastUpdateTime;
         scene.add.existing(this);
 
     }
@@ -20,8 +19,7 @@ class EnemyBulletSkeleton extends Phaser.GameObjects.Sprite{
         this.id=id;
         this.targetX=x;
         this.targetY=y;
-        this.lastUpdateTime=0;
-        this.updateTime=0;
+        this.lastUpdateTime;
         scene.add.existing(this);
         
         
