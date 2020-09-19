@@ -1,0 +1,608 @@
+{
+	"textures": [
+		{
+			"image": "bandit.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 30,
+				"h": 363
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "bandit_death_03.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 3,
+						"h": 3
+					},
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 3,
+						"h": 3
+					}
+				},
+				{
+					"filename": "bandit_death_11.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 3,
+						"h": 3
+					},
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 3,
+						"h": 3
+					}
+				},
+				{
+					"filename": "bandit_gun.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 13,
+						"y": 16,
+						"w": 16,
+						"h": 9
+					},
+					"frame": {
+						"x": 6,
+						"y": 1,
+						"w": 16,
+						"h": 9
+					}
+				},
+				{
+					"filename": "bandit_death_04.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 13,
+						"y": 14,
+						"w": 11,
+						"h": 11
+					},
+					"frame": {
+						"x": 1,
+						"y": 12,
+						"w": 11,
+						"h": 11
+					}
+				},
+				{
+					"filename": "bandit_death_05.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 11,
+						"y": 12,
+						"w": 15,
+						"h": 15
+					},
+					"frame": {
+						"x": 14,
+						"y": 12,
+						"w": 15,
+						"h": 15
+					}
+				},
+				{
+					"filename": "bandit_death_00.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 14,
+						"y": 10,
+						"w": 11,
+						"h": 20
+					},
+					"frame": {
+						"x": 1,
+						"y": 25,
+						"w": 11,
+						"h": 20
+					}
+				},
+				{
+					"filename": "bandit_idle_03.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 13,
+						"y": 11,
+						"w": 13,
+						"h": 19
+					},
+					"frame": {
+						"x": 14,
+						"y": 29,
+						"w": 13,
+						"h": 19
+					}
+				},
+				{
+					"filename": "bandit_death_02.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 9,
+						"y": 10,
+						"w": 20,
+						"h": 18
+					},
+					"frame": {
+						"x": 1,
+						"y": 50,
+						"w": 20,
+						"h": 18
+					}
+				},
+				{
+					"filename": "bandit_hit_01.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 9,
+						"y": 10,
+						"w": 20,
+						"h": 18
+					},
+					"frame": {
+						"x": 1,
+						"y": 50,
+						"w": 20,
+						"h": 18
+					}
+				},
+				{
+					"filename": "bandit_idle_04.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 14,
+						"y": 11,
+						"w": 12,
+						"h": 19
+					},
+					"frame": {
+						"x": 1,
+						"y": 70,
+						"w": 12,
+						"h": 19
+					}
+				},
+				{
+					"filename": "bandit_run_01.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 14,
+						"y": 12,
+						"w": 12,
+						"h": 19
+					},
+					"frame": {
+						"x": 15,
+						"y": 70,
+						"w": 12,
+						"h": 19
+					}
+				},
+				{
+					"filename": "bandit_run_03.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 14,
+						"y": 10,
+						"w": 12,
+						"h": 19
+					},
+					"frame": {
+						"x": 1,
+						"y": 91,
+						"w": 12,
+						"h": 19
+					}
+				},
+				{
+					"filename": "bandit_run_05.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 14,
+						"y": 12,
+						"w": 12,
+						"h": 19
+					},
+					"frame": {
+						"x": 15,
+						"y": 91,
+						"w": 12,
+						"h": 19
+					}
+				},
+				{
+					"filename": "bandit_death_01.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 8,
+						"y": 9,
+						"w": 22,
+						"h": 20
+					},
+					"frame": {
+						"x": 1,
+						"y": 112,
+						"w": 22,
+						"h": 20
+					}
+				},
+				{
+					"filename": "bandit_hit_00.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 8,
+						"y": 9,
+						"w": 22,
+						"h": 20
+					},
+					"frame": {
+						"x": 1,
+						"y": 112,
+						"w": 22,
+						"h": 20
+					}
+				},
+				{
+					"filename": "bandit_idle_00.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 14,
+						"y": 10,
+						"w": 12,
+						"h": 20
+					},
+					"frame": {
+						"x": 1,
+						"y": 134,
+						"w": 12,
+						"h": 20
+					}
+				},
+				{
+					"filename": "bandit_run_00.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 14,
+						"y": 11,
+						"w": 12,
+						"h": 20
+					},
+					"frame": {
+						"x": 15,
+						"y": 134,
+						"w": 12,
+						"h": 20
+					}
+				},
+				{
+					"filename": "bandit_run_02.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 14,
+						"y": 11,
+						"w": 12,
+						"h": 20
+					},
+					"frame": {
+						"x": 1,
+						"y": 156,
+						"w": 12,
+						"h": 20
+					}
+				},
+				{
+					"filename": "bandit_run_04.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 14,
+						"y": 11,
+						"w": 12,
+						"h": 20
+					},
+					"frame": {
+						"x": 15,
+						"y": 156,
+						"w": 12,
+						"h": 20
+					}
+				},
+				{
+					"filename": "bandit_run_06.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 14,
+						"y": 11,
+						"w": 13,
+						"h": 20
+					},
+					"frame": {
+						"x": 1,
+						"y": 178,
+						"w": 13,
+						"h": 20
+					}
+				},
+				{
+					"filename": "bandit_run_07.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 14,
+						"y": 10,
+						"w": 13,
+						"h": 20
+					},
+					"frame": {
+						"x": 16,
+						"y": 178,
+						"w": 13,
+						"h": 20
+					}
+				},
+				{
+					"filename": "bandit_idle_01.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 14,
+						"y": 9,
+						"w": 12,
+						"h": 21
+					},
+					"frame": {
+						"x": 1,
+						"y": 200,
+						"w": 12,
+						"h": 21
+					}
+				},
+				{
+					"filename": "bandit_idle_02.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 14,
+						"y": 9,
+						"w": 12,
+						"h": 21
+					},
+					"frame": {
+						"x": 15,
+						"y": 200,
+						"w": 12,
+						"h": 21
+					}
+				},
+				{
+					"filename": "bandit_death_06.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 7,
+						"y": 8,
+						"w": 23,
+						"h": 23
+					},
+					"frame": {
+						"x": 1,
+						"y": 223,
+						"w": 23,
+						"h": 23
+					}
+				},
+				{
+					"filename": "bandit_death_07.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 5,
+						"y": 6,
+						"w": 27,
+						"h": 27
+					},
+					"frame": {
+						"x": 1,
+						"y": 248,
+						"w": 27,
+						"h": 27
+					}
+				},
+				{
+					"filename": "bandit_death_08.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 5,
+						"y": 6,
+						"w": 27,
+						"h": 27
+					},
+					"frame": {
+						"x": 1,
+						"y": 277,
+						"w": 27,
+						"h": 27
+					}
+				},
+				{
+					"filename": "bandit_death_09.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 5,
+						"y": 6,
+						"w": 27,
+						"h": 27
+					},
+					"frame": {
+						"x": 1,
+						"y": 306,
+						"w": 27,
+						"h": 27
+					}
+				},
+				{
+					"filename": "bandit_death_10.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 40,
+						"h": 40
+					},
+					"spriteSourceSize": {
+						"x": 5,
+						"y": 6,
+						"w": 27,
+						"h": 27
+					},
+					"frame": {
+						"x": 1,
+						"y": 335,
+						"w": 27,
+						"h": 27
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:4a249796bc84f96a88178ab22cb93bb7:22e2f67d8eca855378308b33c7edf5e1:dad2a50fd0fda5c24dd204f70b3cfa2d$"
+	}
+}

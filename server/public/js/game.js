@@ -29,8 +29,11 @@ function preload() {
   this.load.image('slimeEnemy', './assets/slime move_blob_0.png');
   this.load.image("tiles", "assets/16 x 16 codename iso game.png");
   this.load.tilemapTiledJSON("map", 'assets/16test.json');
+  this.load.multiatlas('banditSprites', 'assets/bandit.json', 'assets');
   this.load.image('bullet', './assets/bullet_projectile_0.png');
   this.load.image('coin', './assets/coin_sprite.png');
+  this.load.multiatlas('doorSprites', 'assets/door.json', 'assets');
+  this.load.image('portalHidden', './assets/portal animation_Animation 2_00.png');
 }
 
 function create() {
@@ -45,6 +48,7 @@ function create() {
   this.hearts = this.add.group();
   this.bulletsEnemy = this.add.group();
   this.coins = this.add.group();
+  this.portals=this.add.group();
 
 
 
@@ -63,6 +67,17 @@ function create() {
 
   this.input.setDefaultCursor('url(assets/crosshair.png),pointer');
   this.mouse = this.input.mousePointer;
+
+  //doors
+
+  const doorLocation = map.getObjectLayer('door').objects;
+
+
+  newDoor = new Door({
+    scene: this,
+    x: doorLocation[0].x + (doorLocation[0].width),
+    y: doorLocation[0].y
+  });
 
 
   var frameNamesRun = this.anims.generateFrameNames('playerSprites', {
@@ -176,6 +191,96 @@ function create() {
     suffix: '.png'
   });
 
+  var frameNamesDoorOpen = this.anims.generateFrameNames('doorSprites', {
+    start: 11,
+    end: 23,
+    zeroPad: 2,
+    prefix: 'door anim_Animation 1_',
+    suffix: '.png'
+  });
+
+  var frameNamesDoorClose = this.anims.generateFrameNames('doorSprites', {
+    start: 23,
+    end: 11,
+    zeroPad: 2,
+    prefix: 'door anim_Animation 1_',
+    suffix: '.png'
+  });
+
+  var frameNamesBanditDeath = this.anims.generateFrameNames('banditSprites', {
+    start: 0,
+    end: 11,
+    zeroPad: 2,
+    prefix: 'bandit_death_',
+    suffix: '.png'
+  });
+  var frameNamesBanditIdle = this.anims.generateFrameNames('banditSprites', {
+    start: 0,
+    end: 4,
+    zeroPad: 2,
+    prefix: 'bandit_idle_',
+    suffix: '.png'
+  });
+  var frameNamesBanditHit = this.anims.generateFrameNames('banditSprites', {
+    start: 0,
+    end: 1,
+    zeroPad: 2,
+    prefix: 'bandit_hit_',
+    suffix: '.png'
+  });
+  var frameNamesBanditRun = this.anims.generateFrameNames('banditSprites', {
+    start: 0,
+    end: 7,
+    zeroPad: 2,
+    prefix: 'bandit_run_',
+    suffix: '.png'
+  });
+
+  var frameNamesPortalSpawn = this.anims.generateFrameNames('playerSprites', {
+    start: 0,
+    end: 22,
+    zeroPad: 2,
+    prefix: 'portal animation_Animation 2_',
+    suffix: '.png'
+  });
+  var frameNamesPortalSpawnReverse = this.anims.generateFrameNames('playerSprites', {
+    start: 22,
+    end: 0,
+    zeroPad: 2,
+    prefix: 'portal animation_Animation 2_',
+    suffix: '.png'
+  });
+  var frameNamesPortalSpawnEnemy = this.anims.generateFrameNames('playerSprites', {
+    start: 23,
+    end: 31,
+    zeroPad: 2,
+    prefix: 'portal animation_Animation 2_',
+    suffix: '.png'
+  });
+
+
+
+
+  //portal
+  this.anims.create({
+    key: 'portalSpawn',
+    frames: frameNamesPortalSpawn,
+    frameRate: 10,
+    repeat: 0
+  });
+  this.anims.create({
+    key: 'portalSpawnReverse',
+    frames: frameNamesPortalSpawnReverse,
+    frameRate: 10,
+    repeat: 0
+  });
+  this.anims.create({
+    key: 'portalSpawnEnemy',
+    frames: frameNamesPortalSpawnEnemy,
+    frameRate: 10,
+    repeat: 0
+  });
+
 
   //player
   this.anims.create({
@@ -269,6 +374,47 @@ function create() {
     repeat: 0
   });
 
+  //bandit
+  this.anims.create({
+    key: 'banditRun',
+    frames: frameNamesBanditRun,
+    frameRate: 10,
+    repeat: 0
+  });
+  this.anims.create({
+    key: 'banditDeath',
+    frames: frameNamesBanditDeath,
+    frameRate: 10,
+    repeat: 0
+  });
+  this.anims.create({
+    key: 'banditIdle',
+    frames: frameNamesBanditIdle,
+    frameRate: 10,
+    repeat: 0
+  });
+  this.anims.create({
+    key: 'banditHit',
+    frames: frameNamesBanditHit,
+    frameRate: 10,
+    repeat: 0
+  });
+
+
+  //door
+  this.anims.create({
+    key: 'doorOpen',
+    frames: frameNamesDoorOpen,
+    frameRate: 10,
+    repeat: 0
+  });
+  this.anims.create({
+    key: 'doorClose',
+    frames: frameNamesDoorClose,
+    frameRate: 10,
+    repeat: 0
+  });
+
 
 
   this.scoreText = this.add.text(30, 60, '0', {
@@ -287,7 +433,7 @@ function create() {
   this.socket.on('inputName', function() {
 
     var playerName = nameInput();
-   
+
 
     if (playerName) {
 
@@ -337,9 +483,20 @@ function create() {
   });
 
   this.socket.on('createBulletEnemy', function(enemyBullet) {
-    let newEnemyBullet = new EnemyBulletSkeleton(self, enemyBullet.x, enemyBullet.y, enemyBullet.id);
-    newEnemyBullet.setRotation(enemyBullet.angle);
-    self.bulletsEnemy.add(newEnemyBullet);
+
+    if (enemyBullet.type === 'skelBullet') {
+      let newEnemyBullet = new EnemyBulletSkeleton(self, enemyBullet.x, enemyBullet.y, enemyBullet.id);
+      newEnemyBullet.setRotation(enemyBullet.angle);
+      self.bulletsEnemy.add(newEnemyBullet);
+    }
+
+    if (enemyBullet.type === 'banditBullet') {
+      let newEnemyBullet = new Bullet(self, enemyBullet.x, enemyBullet.y, enemyBullet.id);
+      newEnemyBullet.setRotation(enemyBullet.angle);
+      self.bulletsEnemy.add(newEnemyBullet);
+
+
+    }
 
 
   });
@@ -360,9 +517,11 @@ function create() {
 
       self.enemies.add(newEnemySkeleton);
 
+    }
 
-
-
+    if (enemy.type === 'banditEnemy') {
+      var newBanditEnemy = new BanditEnemy(self, enemy.x, enemy.y, enemy.id);
+      self.enemies.add(newBanditEnemy);
     }
 
   });
@@ -390,17 +549,35 @@ function create() {
 
   });
 
+  this.socket.on('enemyHit', function(id) {
+    self.enemies.getChildren().forEach(function(enemy) {
+      if (id === enemy.id) {
+        enemy.hit = true;
+      }
+    })
+  });
+
+
+  this.socket.on('enemyDeath', function(id) {
+    self.enemies.getChildren().forEach(function(enemy) {
+      if (id === enemy.id) {
+        enemy.death = true;
+      }
+    })
+  });
+
 
   this.socket.on('enemyUpdates', function(enemiesArray) {
-        
-    
+
     Object.keys(enemiesArray).forEach(function(id) {
       self.enemies.getChildren().forEach(function(enemy) {
 
+
+
         if (enemiesArray[id].id === enemy.id) {
           var localTime = Date.now();
-      
-      //    console.log(enemiesArray[id]);
+
+          //    console.log(enemiesArray[id]);
           if (enemiesArray[id].type === 'skeletonEnemy') {
             enemy.spawning = enemiesArray[id].spawning;
             enemy.moving = enemiesArray[id].moving;
@@ -409,30 +586,40 @@ function create() {
 
           }
 
-        
-            
-         // enemy.updateTime = enemiesArray[id].updateTime;
+
+          if (enemiesArray[id].type === 'banditEnemy') {
+            enemy.moving = enemiesArray[id].moving;
+            enemy.angle = enemiesArray[id].angle;
+            enemy.idle = enemiesArray[id].idle;
+
+          }
+
+
+
+          // enemy.updateTime = enemiesArray[id].updateTime;
           var targetX = enemiesArray[id].x;
           var targetY = enemiesArray[id].y;
           var duration = (localTime - enemy.lastUpdateTime);
-          
-          if (!enemy.lastUpdateTime)
-            {
-              enemy.setPosition(targetX, targetY);
-              
-            }
-          else
-            {
-           var tween = self.tweens.add({
-                targets: enemy,
-                x: targetX,
-                y: targetY,
 
-                duration: duration
-              });
+          if (!enemy.lastUpdateTime) {
+            enemy.setPosition(targetX, targetY);
+
+          } else {
+            var tween = self.tweens.add({
+              targets: enemy,
+              x: targetX,
+              y: targetY,
+
+              duration: duration,
+
+              onComplete: function() {
+                tween.destroy
+              }
+
+            });
 
 
-            }
+          }
 
           if (enemiesArray[id].death) {
             enemy.death = true;
@@ -444,38 +631,36 @@ function create() {
 
             }
           }
-          
-          enemy.lastUpdateTime=localTime;
+
+          enemy.lastUpdateTime = localTime;
         }
       });
     });
   });
 
   this.socket.on('bulletUpdatesEnemy', function(bulletArray) {
-        
+
     Object.keys(bulletArray).forEach(function(id) {
       self.bulletsEnemy.getChildren().forEach(function(bullet) {
 
         if (bulletArray[id].id === bullet.id) {
-         var localTime = Date.now();         
+          var localTime = Date.now();
           var targetX = bulletArray[id].x;
           var targetY = bulletArray[id].y;
           var duration = (localTime - bullet.lastUpdateTime);
-          
-          if (!bullet.lastUpdateTime)
-            {
-              bullet.setPosition(targetX,targetY);
-              
-            }
-          else
-            {
-          
-           var tween = self.tweens.add({
+
+          if (!bullet.lastUpdateTime) {
+            bullet.setPosition(targetX, targetY);
+
+          } else {
+
+            var tween = self.tweens.add({
               targets: bullet,
               x: targetX,
               y: targetY,
               duration: duration,
               onComplete: function() {
+                tween.destroy
                 if (bulletArray[id].hit == true) {
 
                   var bulletHit = self.add.sprite(bullet.x, bullet.y, 'playerSprites', 'on hit_on hit_0.png');
@@ -489,39 +674,36 @@ function create() {
                 }
               },
             });
-           
-            }
-          
-          bullet.lastUpdateTime=localTime;
+
+          }
+
+          bullet.lastUpdateTime = localTime;
         }
       });
     });
   });
 
 
-  this.socket.on('bulletUpdates', function(bulletArray) {
+  this.socket.on('bulletUpdates', function(bulletData) {
+    self.bullets.getChildren().forEach(function(bullet) {
 
-    Object.keys(bulletArray).forEach(function(id) {
-      self.bullets.getChildren().forEach(function(bullet) {
-        if (bulletArray[id].id === bullet.id) {
-          //create rectangle for debugging
-          //let render = self.add.graphics();
-          //let bounds = bullet.getBounds();
+      if (bulletData.id === bullet.id) {
+        //create rectangle for debugging
+        //let render = self.add.graphics();
+        //let bounds = bullet.getBounds();
 
-          //render.lineStyle(3, 0xffff37);
-          //render.strokeRectShape(bounds);
-          var localTime = Date.now();
-   
-          var targetX = bulletArray[id].x;
-          var targetY = bulletArray[id].y;
-          var duration = (localTime - bullet.lastUpdateTime);
-          
-          if (!bullet.lastUpdateTime)
-            {
-              bullet.setPosition(targetX,targetY);
-            }
-          else
-            {
+        //render.lineStyle(3, 0xffff37);
+        //render.strokeRectShape(bounds);
+        var localTime = Date.now();
+
+        var targetX = bulletData.x;
+        var targetY = bulletData.y;
+        var duration = (localTime - bullet.lastUpdateTime);
+        var hit = bulletData.hit;
+
+        if (!bullet.lastUpdateTime) {
+          bullet.setPosition(targetX, targetY);
+        } else {
 
           var tween = self.tweens.add({
             targets: bullet,
@@ -530,7 +712,9 @@ function create() {
 
             duration: duration,
             onComplete: function() {
-              if (bulletArray[id].hit == true) {
+              tween.destroy
+
+              if (hit == true) {
 
                 var bulletHit = self.add.sprite(bullet.x, bullet.y, 'playerSprites', 'on hit_on hit_0.png');
                 bulletHit.anims.play('bulletHit', true).on('animationcomplete', () => {
@@ -543,15 +727,22 @@ function create() {
               }
             },
           });
-          
-            }
-          
-          bullet.lastUpdateTime=localTime;
 
         }
-      });
+
+        bullet.lastUpdateTime = localTime;
+
+      }
+
+
+      //
     });
+
+    //  });
+
+
   });
+
 
 
 
@@ -561,7 +752,7 @@ function create() {
     Object.keys(players).forEach(function(id) {
       self.players.getChildren().forEach(function(player) {
         if (players[id].playerId === player.playerId) {
-         
+
           var localTimePlayer = Date.now();
           //set new updates to player   
           player.moving = players[id].moving;
@@ -574,15 +765,15 @@ function create() {
           player.gunSprite.setRotation(player.angle);
           player.coins = players[id].coins;
 
-          
+
           //update target x // target y and duration since last update
           var duration = (localTimePlayer - player.lastUpdateTime);
-         
-       
+
+
           var targetX = players[id].x;
           var targetY = players[id].y;
-          
-      
+
+
           if (!player.alive) {
             if (player.playDeathAnimation) {
               player.playDeathAnimation = false;
@@ -611,27 +802,23 @@ function create() {
           }
 
           if (player.alive) {
-            
-            
-                
-          if (!players.lastUpdateTime)
-            {
-              player.setPosition(targetX,targetY);
 
-            }
-            
-            else
-              {
-            var tween = self.tweens.add({
+            if (!players.lastUpdateTime) {
+              player.setPosition(targetX, targetY);
+
+            } else {
+              var tween = self.tweens.add({
                 targets: player,
                 x: targetX,
                 y: targetY,
 
-                duration: duration
+                duration: duration,
+                onComplete: function() {
+                  tween.destroy
+                },
               });
-                
-              }
-            
+
+            }
 
             if ((player.angle * (180 / Math.PI) > 90) || ((player.angle * (180 / Math.PI) > -180) && (player.angle * (180 / Math.PI) < -90))) {
               //flip player body sprite
@@ -643,25 +830,6 @@ function create() {
 
             }
 
-            /*
-                       if (player.roll)
-                    {
-                      player.playRollAnimation = true;
-                      if (player.playRollAnimation)
-                        {
-                          player.playRollAnimation=false;
-                          player.playerBody.anims.play('playerRoll',false).once('animationcomplete', ()=>{
-                          
-                           player.roll=false;
-                           player.playRollAnimation=true;
-                           updateRollStatus(self,player); 
-                           console.log('roll animation finished'); 
-                           
-                        }); 
-                        }
-                  
-                    }
-                    */
             if (player.roll) {
               if (player.playRollAnimation) {
                 player.playRollAnimation = false;
@@ -687,16 +855,85 @@ function create() {
 
 
           }
-             player.lastUpdateTime = localTimePlayer;
-    
-        
+          player.lastUpdateTime = localTimePlayer;
+
+
         }
         //set this updatetime to last updatetime 
-        
-   
+
+
       });
     });
   });
+
+  this.socket.on('doorOpen', function() {
+    newDoor.anims.play('doorOpen', false);
+  });
+
+
+  this.socket.on('doorClose', function() {
+    newDoor.anims.play('doorClose', false);
+  });
+  
+  this.socket.on('createPortal', function(portal){
+    var newPortal = new PortalSpawn(self,portal.x,portal.y,portal.id);
+    self.portals.add(newPortal);
+    console.log(self.portals);
+    
+  });
+  
+  this.socket.on('portalSpawn', function(id){
+
+    self.portals.getChildren().forEach(function(portal){
+      if (portal.id === id)
+        {
+          portal.anims.play('portalSpawn',false);
+          
+        }
+    });
+    
+    
+  });
+  
+  
+  this.socket.on('portalPlayDeSpawnAnimation', function (id){
+     self.portals.getChildren().forEach(function(portal){
+      if (portal.id === id)
+        {
+
+          portal.anims.play('portalSpawnReverse',false);
+          
+        }
+    });
+  });
+  
+  this.socket.on('portalPlaySpawnAnimation', function(id){
+
+    self.portals.getChildren().forEach(function(portal){
+      if (portal.id === id)
+        {
+          portal.anims.play('portalSpawnEnemy',false);
+          
+        }
+    });
+    
+    
+  });
+  
+  
+  this.socket.on('gameOver', function(playerName){
+    
+    
+    var text="Winner is "+playerName+" !!!!!!";
+    self.winText = self.add.text(300,400,text);
+    self.winText.color="black";
+    self.winText.setFontSize(30);
+    self.winText.setFontFamily('FreeMono', 'monospace');
+   
+  });
+
+
+
 
 
 

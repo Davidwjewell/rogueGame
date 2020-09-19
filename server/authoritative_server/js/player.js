@@ -1,5 +1,5 @@
 class Player extends Phaser.GameObjects.Container{
-    constructor(scene,x,y,id)
+    constructor(scene,x,y,id,name)
     {
      
     super(scene,x,y);  
@@ -9,6 +9,7 @@ class Player extends Phaser.GameObjects.Container{
     this.alive=true;  
     this.hit=false;  
     this.coins=0;
+    this.name=name;  
     //this.health=150;
     this.fireTime=0;
     this.fireDelay=300;

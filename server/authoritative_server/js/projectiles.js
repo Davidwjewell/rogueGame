@@ -19,8 +19,10 @@ class EnemyBulletSkeleton extends Phaser.Physics.Arcade.Sprite{
         scene.physics.add.existing(this);
         this.hit=false;
         this.id=id;
+        this.type=null;
     }
 }
+
 
 function bulletCollide(bullets)
 {
@@ -52,18 +54,3 @@ function bulletCollideEnemy(bullet)
   }
   
 }
-
-/*
-var bulletPos={
-  x:bullets.x,
-  y:bullets.y
-}; 
-  
-bullets.disableBody(true,true);  
-io.emit('destroyBullet', bulletPos);
-delete bulletArray[bullets.id];  
-bullets.destroy();
-}
-    
-}
-*/

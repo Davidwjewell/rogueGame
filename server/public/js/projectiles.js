@@ -21,8 +21,5 @@ class EnemyBulletSkeleton extends Phaser.GameObjects.Sprite{
         this.targetY=y;
         this.lastUpdateTime;
         scene.add.existing(this);
-        
-        
-        this.hit=false;
     }
 }

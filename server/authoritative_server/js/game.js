@@ -9,13 +9,17 @@ var bulletCounter = 0;
 var enemyBulletCounter = 0;
 var enemyIdCounter = 0;
 var spawnTime = 0;
-var twoPlayerTest = true;
+var twoPlayerTest = false;
 var coinSpawnTime = 0;
 var coinIdCounter = 0;
 const spawnTestCoins = false;
 const onePlayerSkeletonTest = false;
-const spawnTestEnemiesNumber=10;
-var packetCounter=0;
+const spawnTestEnemiesNumber = 1;
+const banditTest = false;
+
+var portalTest = false;
+
+
 
 var config = {
   type: Phaser.HEADLESS,
@@ -49,19 +53,24 @@ function preload() {
   this.load.image('star', 'assets/star_gold.png');
   this.load.image('bullet', './assets/bullet_projectile_0.png');
   this.load.image('coin', './assets/coin_sprite.png');
-
-
+  this.load.multiatlas('banditSprites', 'assets/bandit.json', 'assets');
+  this.load.multiatlas('doorSprites', 'assets/door.json', 'assets');
+  this.load.image('portalHidden', './assets/portal animation_Animation 2_00.png');
 
 }
 
 function create() {
   const self = this;
-  //this.physics.world.setFPS(60);
+  this.physics.world.setFPS(60);
   this.players = this.physics.add.group();
   this.bullets = this.physics.add.group();
   this.enemies = this.physics.add.group();
   this.enemyBullets = this.physics.add.group();
   this.coins = this.physics.add.group();
+  this.portals = this.physics.add.group();
+  
+  this.gameController = new GameController();
+ 
 
   const map = this.make.tilemap({
     key: "map"
@@ -75,6 +84,34 @@ function create() {
 
   this.wallLayer.setCollisionByProperty({
     collides: true
+  });
+
+
+  const doorLocation = map.getObjectLayer('door').objects;
+
+
+  this.newDoor = new Door({
+    scene: this,
+    x: doorLocation[0].x + (doorLocation[0].width),
+    y: doorLocation[0].y
+  });
+
+
+  //place portals on map
+  const portalSpawnLocations = map.getObjectLayer('portalSpawners').objects;
+
+  var portalId=1;
+  
+  portalSpawnLocations.forEach(portal => {
+   
+    const newPortal = new PortalSpawn({
+      scene: this,
+      x: portal.x + portal.width / 2,
+      y: portal.y - portal.height / 2,
+      id: portalId
+    });
+    this.portals.add(newPortal);
+    portalId++;
   });
 
 
@@ -124,6 +161,23 @@ function create() {
     frameRate: 10,
     repeat: 0
   });
+  //
+  var frameNamesDoorOpen = this.anims.generateFrameNames('doorSprites', {
+    start: 11,
+    end: 23,
+    zeroPad: 2,
+    prefix: 'door anim_Animation 1_',
+    suffix: '.png'
+  });
+
+  //door
+  this.anims.create({
+    key: 'doorOpen',
+    frames: frameNamesDoorOpen,
+    frameRate: 10,
+    repeat: 0
+  });
+
 
 
 
@@ -133,10 +187,6 @@ function create() {
     console.log('a user connected');
     //get user name 
     socket.emit('inputName');
-
-
-
-
 
     socket.on('playerNameInput', function(playerName) {
       console.log('player name recieved');
@@ -179,10 +229,19 @@ function create() {
       socket.emit('currentPlayers', players);
       // update all other players of the new player
       socket.broadcast.emit('newPlayer', players[socket.id]);
-
-    });
-
-
+      
+        });
+      //create portals and locations
+    
+      self.portals.getChildren().forEach(function(portal){
+          var portalData = {
+          x: portal.x,
+          y: portal.y,
+          id: portal.id
+        };
+        socket.emit('createPortal', portalData);
+      });
+    
     socket.on('disconnect', function() {
       console.log('user disconnected');
       // remove player from server
@@ -201,145 +260,23 @@ function create() {
 
 }
 
-function update(time) {
 
+function update(time,delta,self) {
 
-  //spawn coin every 500 ms until max reached
-
-  if (this.coins.getLength() < 20 && spawnTestCoins) {
-
-
-    if (coinSpawnTime === 0 || time - coinSpawnTime > 2000) {
-      let newCoin = null;
-      coinIdCounter++;
-      newCoin = spawnCoin(this, this.wallLayer, coinIdCounter);
-      //if coin created
-      if (newCoin)
-
-      {
-
-        this.coins.add(newCoin);
-
-        coinArray[newCoin.id] = {
-          x: newCoin.x,
-          y: newCoin.y,
-          id: newCoin.id
-        };
-
-        io.emit('createCoin', coinArray[newCoin.id]);
-
-        coinSpawnTime = time;
-
-      }
-
-
-    }
-
+if (this.gameController.gameOver)
+  {
+  
+   io.emit('gameOver', this.gameController.winningPlayer.name);
 
   }
   
-  if (onePlayerSkeletonTest)
+  if (!this.gameController.gameOver)
     {
-      if (this.enemies.getLength() < spawnTestEnemiesNumber && this.players && this.players.getLength() > 0)
-        {
-           if (spawnTime === 0 || (time - spawnTime > 2000)) {
-            enemyIdCounter++;
-
-        x = Math.floor(Math.random() * 700) + 50;
-        y = Math.floor(Math.random() * 500) + 50;
-
-        let newEnemySkeleton = new SkeletonEnemy(this, x, y, enemyIdCounter);
-        // findTarget(this,newEnemy,time);
-        this.enemies.add(newEnemySkeleton);
-
-        enemiesArray[newEnemySkeleton.id] = {
-          x: newEnemySkeleton.x,
-          y: newEnemySkeleton.y,
-          id: newEnemySkeleton.id,
-          type: newEnemySkeleton.type
-        }
-
-        io.emit('createEnemy', enemiesArray[newEnemySkeleton.id]);
-        spawnTime = time;
-
-          
-          
-        }
-         
-          
-        }
-      
-      
-      
+   this.gameController.update(this,time);
     }
 
-
-
-  if (twoPlayerTest) {
-
-    if (this.enemies.getLength() < 10 && this.players && this.players.getLength() > 1) {
-
-      if (spawnTime === 0 || (time - spawnTime > 2000)) {
-
-
-        /*
-        enemyIdCounter++;
-        var x = Math.floor(Math.random() * 700) + 50;
-        var y =Math.floor(Math.random() * 500) + 50;
-        var newEnemy = new SlimeEnemy(this,x,y,enemyIdCounter);
-        newEnemy.setSize(10,10,true);
-        this.enemies.add(newEnemy);
-        findTarget(this,newEnemy,time);
-         */
-
-
-        enemyIdCounter++;
-
-        x = Math.floor(Math.random() * 700) + 50;
-        y = Math.floor(Math.random() * 500) + 50;
-
-        let newEnemySkeleton = new SkeletonEnemy(this, x, y, enemyIdCounter);
-        // findTarget(this,newEnemy,time);
-        this.enemies.add(newEnemySkeleton);
-
-        enemiesArray[newEnemySkeleton.id] = {
-          x: newEnemySkeleton.x,
-          y: newEnemySkeleton.y,
-          id: newEnemySkeleton.id,
-          type: newEnemySkeleton.type
-        }
-
-        io.emit('createEnemy', enemiesArray[newEnemySkeleton.id]);
-
-
-        enemyIdCounter++;
-
-        x = Math.floor(Math.random() * 700) + 50;
-        y = Math.floor(Math.random() * 500) + 50;
-
-        var newEnemySlime = new SlimeEnemy(this, x, y, enemyIdCounter);
-        newEnemySlime.setSize(10, 10, true);
-        this.enemies.add(newEnemySlime);
-
-
-        enemiesArray[newEnemySlime.id] = {
-          x: newEnemySlime.x,
-          y: newEnemySlime.y,
-          id: newEnemySlime.id,
-          type: newEnemySlime.type
-        };
-
-        io.emit('createEnemy', enemiesArray[newEnemySlime.id]);
-        spawnTime = time;
-
-
-      }
-
-    }
-
-  }
-  
-  
+  if (this.gameController.gameRun)
+    {
 
   this.players.getChildren().forEach((player) => {
     const inputInfo = players[player.playerId].input;
@@ -412,9 +349,9 @@ function update(time) {
 
 
           } else if (inputInfo.up && inputInfo.left && inputInfo.mouseRight) {
-            console.log(player.roll);
+
             //roll left and up 
-            console.log('up and left');
+
             player.roll = true;
             player.body.setVelocityY(-player.rollspeed);
             player.body.setVelocityX(-player.rollspeed);
@@ -427,7 +364,6 @@ function update(time) {
 
           } else if (inputInfo.up && inputInfo.right && (inputInfo.mouseRight)) {
             //roll right and up
-            console.log('up and right');
 
             player.roll = true;
             player.body.setVelocityY(-player.rollspeed);
@@ -449,10 +385,6 @@ function update(time) {
         }
 
         //Player not rolling
-
-
-
-
 
 
         if (inputInfo.down) {
@@ -513,9 +445,7 @@ function update(time) {
 
 
 
-          }
-
-          else {
+          } else {
             player.moving = true;
             player.body.setVelocityX(-player.speed);
           }
@@ -530,9 +460,7 @@ function update(time) {
               player.roll = false;
             });
 
-          }
-
-          else {
+          } else {
             player.moving = true;
             player.body.setVelocityX(player.speed);
 
@@ -542,6 +470,7 @@ function update(time) {
 
         if (inputInfo.mouseLeft) {
           if ((time - player.fireTime > player.fireDelay || player.fireTime == 0)) {
+
             player.fireTime = time;
 
             var bulletId = bulletCounter;
@@ -550,6 +479,7 @@ function update(time) {
             var newBullet = new Bullet(this, player.x, player.y, bulletId);
             newBullet.playerFiredId = player.playerId;
             newBullet.setSize(10, 10, true);
+
             this.bullets.add(newBullet);
 
             bulletArray[newBullet.id] = {
@@ -557,15 +487,22 @@ function update(time) {
               y: newBullet.y,
               id: newBullet.id,
               angle: inputInfo.angle,
-              hitX: 0,
-              hitY: 0
+              hit: null,
+              hitX: null,
+              hitY: null
             };
 
 
+
+
+
+
+            this.bullets.add(newBullet);
             this.physics.moveTo(newBullet, inputInfo.pointerX, inputInfo.pointerY, newBullet.speed);
 
-
             io.emit('createBullet', bulletArray[newBullet.id]);
+
+
           }
 
         }
@@ -575,13 +512,13 @@ function update(time) {
 
       //
     }
-    
+
 
 
     players[player.playerId].x = player.x;
     players[player.playerId].y = player.y;
     players[player.playerId].moving = player.moving;
-    players[player.playerId].angle = player.angle; 
+    players[player.playerId].angle = player.angle;
     players[player.playerId].hit = player.hit;
     players[player.playerId].hearts = player.hearts;
     players[player.playerId].alive = player.alive;
@@ -594,36 +531,40 @@ function update(time) {
     player.respawn = false;
   });
 
- 
+
   //this.physics.world.wrap(this.players, 5);
   io.emit('playerUpdates', players);
-  
+  ////
+  ////
 
-  //update bullets
-  if (this.bullets) {
-    this.bullets.getChildren().forEach(bullet => {
 
-        if (bulletArray[bullet.id]) {
-          bulletArray[bullet.id].x = bullet.x;
-          bulletArray[bullet.id].y = bullet.y;
-          bulletArray[bullet.id].hit = bullet.hit;
-        
+  if (this.bullets.getLength() > 0) {
+    this.bullets.getChildren().forEach(function(bullet) {
 
-          if (bullet.hit) {
-            bulletsDeleteArray.push(bullet.id);
-            bullet.destroy();
-          }
-        }
-      else
+
+      var bulletData =
+
         {
-          console.log('bullet false in array');
-        }
+          id: bullet.id,
+          x: bullet.x,
+          y: bullet.y,
+          hit: bullet.hit
+        };
 
+      io.emit('bulletUpdates', bulletData)
+
+      if (bullet.hit) {
+
+        bulletsDeleteArray.push(bullet.id);
+        bullet.destroy();
+
+      }
     });
+
+    //io.emit('bulletUpdates', bulletArrayDataSend);
 
   }
 
-  io.emit('bulletUpdates', bulletArray);
 
   if (bulletsDeleteArray) {
 
@@ -635,19 +576,31 @@ function update(time) {
   }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
   //enemy bullets
   if (this.enemyBullets) {
-    
-     
+
+
 
     this.enemyBullets.getChildren().forEach(bullet => {
 
-    
-      
+
+
       bulletArrayEnemy[bullet.id].x = bullet.x;
       bulletArrayEnemy[bullet.id].y = bullet.y;
       bulletArrayEnemy[bullet.id].hit = bullet.hit;
- 
+
 
       if (bullet.hit) {
         bulletsDeleteArray.push(bullet.id);
@@ -659,7 +612,7 @@ function update(time) {
 
 
 
-    io.emit('bulletUpdatesEnemy', bulletArrayEnemy);
+    //io.emit('bulletUpdatesEnemy', bulletArrayEnemy);
 
 
   }
@@ -677,12 +630,12 @@ function update(time) {
   //});  
 
   if (this.enemies) {
-     
-    
-    
+
+
+
     this.enemies.getChildren().forEach((enemy) => {
-      
-   
+
+
 
       if (enemy.type === 'slime') {
 
@@ -699,9 +652,6 @@ function update(time) {
           this.physics.moveTo(enemy, enemy.target.x, enemy.target.y, enemy.speed);
           enemiesArray[enemy.id].x = enemy.x;
           enemiesArray[enemy.id].y = enemy.y;
-          enemiesArray[enemy.id].hit = enemy.hit;
-          enemiesArray[enemy.id].death = enemy.death;
-   
 
         }
 
@@ -746,6 +696,7 @@ function update(time) {
             if (enemy.target) {
               setGunAngle(enemy);
 
+
               if ((Phaser.Math.Distance.Between(enemy.x, enemy.y, enemy.target.x, enemy.target.y) < enemy.shotDistance)) //&& 
               // player in range
               {
@@ -780,7 +731,10 @@ function update(time) {
                     y: newEnemyBullet.y,
                     id: newEnemyBullet.id,
                     angle: enemy.angle,
-                    updateTime:0
+                    hit: null,
+                    hitX: null,
+                    hitY: null,
+                    type: 'skelBullet'
                   };
 
                   this.physics.moveTo(newEnemyBullet, enemy.target.x, enemy.target.y, enemy.projectilespeed);
@@ -811,22 +765,124 @@ function update(time) {
 
           enemiesArray[enemy.id].x = enemy.x;
           enemiesArray[enemy.id].y = enemy.y;
-          enemiesArray[enemy.id].hit = enemy.hit;
-          enemiesArray[enemy.id].death = enemy.death;
+          enemiesArray[enemy.id].angle = enemy.angle;
           enemiesArray[enemy.id].spawning = enemy.spawning;
           enemiesArray[enemy.id].moving = enemy.moving;
-          enemiesArray[enemy.id].angle = enemy.angle;
           enemiesArray[enemy.id].idle = enemy.idle;
 
         }
 
       }
 
-      io.emit('enemyUpdates', enemiesArray);
+      if (enemy.type === "banditEnemy") {
+        if (enemy.idle) {
+          if (time - enemy.idleStart < enemy.idleTime) {
+            enemy.activeState = false;
+          } else {
+            enemy.idle = false;
+            enemy.totalShots = 0;
+            enemy.activeState = true;
+
+          }
+        }
 
 
 
-      if (enemiesArray[enemy.id].death) {
+        if (enemy.activeState) {
+
+          if ((!enemy.target) || (!enemy.target.alive) || (time - enemy.checkTargetTime > enemy.checkTargetAgainTimer)) {
+            findTarget(this, enemy, time);
+          }
+
+          if (enemy.target) {
+            setGunAngle(enemy);
+
+            if (time - enemy.distanceCheckTimer > enemy.checkTargetAgainTimer) {
+
+              var distanceToPlayer = checkDistance(enemy, time);
+              if (distanceToPlayer < enemy.shotDistance)
+              // if ((Phaser.Math.Distance.Between(enemy.x, enemy.y, enemy.target.x, enemy.target.y) < enemy.shotDistance)) //&& 
+              // player in range
+              {
+
+                enemy.inRange = true; // player in range
+                enemy.moving = false; // dont move
+              } else {
+                enemy.inRange = false; // player not in range
+                enemy.moving = true;
+              }
+            }
+
+            if (enemy.inRange) {
+
+
+              enemy.body.setVelocity(0, 0);
+
+              //console.log('in range');
+              //fire projectile
+              if (time - enemy.fireTime > enemy.fireDelay || enemy.fireTime == 0) {
+                enemyBulletCounter++;
+                enemy.fireTime = time;
+                let newEnemyBullet = new Bullet(this, enemy.x, enemy.y, enemyBulletCounter);
+                newEnemyBullet.setSize(10, 10, true);
+                //newEnemyBullet.setRotation(angle);
+
+                this.enemyBullets.add(newEnemyBullet);
+
+                enemy.totalShots++;
+
+                bulletArrayEnemy[newEnemyBullet.id] = {
+                  x: newEnemyBullet.x,
+                  y: newEnemyBullet.y,
+                  id: newEnemyBullet.id,
+                  angle: enemy.angle,
+                  hitX: null,
+                  hitY: null,
+                  type: 'banditBullet'
+                };
+
+                this.physics.moveTo(newEnemyBullet, enemy.target.x, enemy.target.y, enemy.projectilespeed);
+
+                io.emit('createBulletEnemy', bulletArrayEnemy[newEnemyBullet.id]);
+
+              }
+
+
+            }
+
+            if (enemy.totalShots == enemy.shotGroup) {
+
+              enemy.idle = true;
+              enemy.idleStart = time;
+            }
+
+
+            if (enemy.moving) {
+              this.physics.moveTo(enemy, enemy.target.x, enemy.target.y, enemy.speed);
+              setGunAngle(enemy);
+            }
+
+          }
+
+
+        }
+
+        enemiesArray[enemy.id].x = enemy.x;
+        enemiesArray[enemy.id].y = enemy.y;
+        enemiesArray[enemy.id].moving = enemy.moving;
+        enemiesArray[enemy.id].angle = enemy.angle;
+        enemiesArray[enemy.id].idle = enemy.idle;
+
+
+
+      }
+
+      if (enemy.hit) {
+        io.emit('enemyHit', enemy.id);
+      }
+
+      if (enemy.death) {
+        io.emit('enemyDeath', enemy.id);
         enemyDeleteArray.push(enemy.id);
         enemy.destroy();
       } else {
@@ -839,7 +895,6 @@ function update(time) {
 
     });
 
-    //   io.emit('enemyUpdates', enemiesArray);
 
     if (enemyDeleteArray) {
       for (var k = 0; k < enemyDeleteArray.length; k++) {
@@ -850,7 +905,31 @@ function update(time) {
 
   }
 
+  this.newDoor.updateDoor(time); //update door
+  
+  //
+  this.portals.getChildren().forEach((portal) =>{
+    portal.updatePortal(time, this);
+  });
+  
 }
+
+}
+
+
+function updateLoop() {
+
+
+  io.emit('enemyUpdates', enemiesArray);
+  io.emit('bulletUpdatesEnemy', bulletArrayEnemy);
+
+
+
+
+}
+
+setInterval(updateLoop, 100);
+
 
 
 //distance check function to find closest playerCounter
@@ -881,6 +960,17 @@ function findTarget(self, enemy, time) {
 }
 
 
+function checkDistance(enemy, time) {
+
+  var distance = Math.hypot(enemy.x - enemy.target.x, enemy.y - enemy.target.y);
+  enemy.distanceCheckTimer = time;
+  return distance;
+
+
+
+}
+
+
 function randomPosition(max) {
   return Math.floor(Math.random() * max) + 50;
 }
@@ -895,7 +985,7 @@ function handlePlayerInput(self, playerId, input) {
 }
 
 function addPlayer(self, playerInfo) {
-  let player = new Player(self, playerInfo.x, playerInfo.y, playerInfo.playerId);
+  let player = new Player(self, playerInfo.x, playerInfo.y, playerInfo.playerId, playerInfo.name);
   self.players.add(player);
 }
 
@@ -907,6 +997,7 @@ function removePlayer(self, playerId) {
     }
   });
 }
+
 
 const game = new Phaser.Game(config);
 window.gameLoaded();

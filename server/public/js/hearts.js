@@ -35,7 +35,10 @@ function updateHearts(scene,player)
     var heartgroup=scene.hearts.getChildren();
     for (var i=totalHearts-1; i>player.hearts-1;i--)
     {
+      if (heartgroup[i])
+        {
         heartgroup[i].setTexture('playerSprites','hearts_hearts_1.png');
+        }
     }
       
       
