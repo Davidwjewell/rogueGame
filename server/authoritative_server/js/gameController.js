@@ -2,14 +2,14 @@ class GameController {
   constructor()
   {
     this.enemyIdCounter=0;
-    this.coinWinAmout=1;
+    this.coinWinAmout=30;
     this.winState=false;
     this.winningPlayer=null;
     this.chanceSpawnSkeleton=10;
     this.chanceSpawnBandit=5;
     this.chanceSpawnTimer=2000;
     this.chanceSpawnTime=0;
-    this.playersToStart=1;
+    this.playersToStart=2;
     this.coinsInGame=20;
     this.gameRun=false;
     this.coinSpawnTime=0;
