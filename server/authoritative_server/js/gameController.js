@@ -9,11 +9,11 @@ class GameController {
     this.chanceSpawnBandit=5;
     this.chanceSpawnTimer=2000;
     this.chanceSpawnTime=0;
-    this.playersToStart=2;
+    this.playersToStart=3;
     this.coinsInGame=20;
     this.gameRun=false;
     this.coinSpawnTime=0;
-    this.coinSpawnTimer=2000;
+    this.coinSpawnTimer=3000;
     this.coinIdCounter=0;
     this.gameOver=false;
   }
