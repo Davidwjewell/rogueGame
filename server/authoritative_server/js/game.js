@@ -533,7 +533,7 @@ if (this.gameController.gameOver)
 
 
   //this.physics.world.wrap(this.players, 5);
-  io.emit('playerUpdates', players);
+   io.emit('playerUpdates', players);
   ////
   ////
 
@@ -922,6 +922,8 @@ function updateLoop() {
 
   io.emit('enemyUpdates', enemiesArray);
   io.emit('bulletUpdatesEnemy', bulletArrayEnemy);
+  io.emit('playerUpdates', players);
+  ////
 
 
 

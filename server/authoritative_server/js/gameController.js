@@ -9,7 +9,7 @@ class GameController {
     this.chanceSpawnBandit=5;
     this.chanceSpawnTimer=2000;
     this.chanceSpawnTime=0;
-    this.playersToStart=3;
+    this.playersToStart=2;
     this.coinsInGame=20;
     this.gameRun=false;
     this.coinSpawnTime=0;

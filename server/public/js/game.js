@@ -754,6 +754,7 @@ function create() {
         if (players[id].playerId === player.playerId) {
 
           var localTimePlayer = Date.now();
+          
           //set new updates to player   
           player.moving = players[id].moving;
           player.roll = players[id].roll;
@@ -803,19 +804,19 @@ function create() {
 
           if (player.alive) {
 
-            if (!players.lastUpdateTime) {
+            if (!player.lastUpdateTime) {
+     
               player.setPosition(targetX, targetY);
 
             } else {
+              
+           
               var tween = self.tweens.add({
                 targets: player,
                 x: targetX,
                 y: targetY,
 
                 duration: duration,
-                onComplete: function() {
-                  tween.destroy
-                },
               });
 
             }
