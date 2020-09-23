@@ -922,7 +922,7 @@ function updateLoop() {
 
   io.emit('enemyUpdates', enemiesArray);
   io.emit('bulletUpdatesEnemy', bulletArrayEnemy);
-  io.emit('playerUpdates', players);
+ // io.emit('playerUpdates', players);
   ////
 
 
