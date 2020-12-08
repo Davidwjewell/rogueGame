@@ -36,6 +36,7 @@ function setupAuthoritativePhaser() {
       });
     };
     dom.window.io = io;
+    dom.window.args=process.argv;
   }).catch((error) => {
     console.log(error.message);
   });

@@ -2,14 +2,14 @@ class GameController {
   constructor()
   {
     this.enemyIdCounter=0;
-    this.coinWinAmout=30;
+    this.coinWinAmout=parseInt(args[3]);
     this.winState=false;
     this.winningPlayer=null;
     this.chanceSpawnSkeleton=10;
     this.chanceSpawnBandit=5;
     this.chanceSpawnTimer=2000;
     this.chanceSpawnTime=0;
-    this.playersToStart=2;
+    this.playersToStart=parseInt(args[2]);
     this.coinsInGame=20;
     this.gameRun=false;
     this.coinSpawnTime=0;
@@ -21,9 +21,12 @@ class GameController {
   
   update(scene,time)
   {
+
+    
     if (scene.players.getLength() === this.playersToStart && !this.gameOver)
       {
-        
+      
+     
         this.gameRun=true;
 
       }
