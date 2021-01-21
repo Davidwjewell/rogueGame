@@ -808,7 +808,15 @@ function create() {
      
               player.setPosition(targetX, targetY);
 
-            } else {
+            }
+               else
+            {
+            
+               player.setPosition(targetX, targetY);
+            }
+            /*
+         
+            else {
               
            
               var tween = self.tweens.add({
@@ -820,7 +828,7 @@ function create() {
               });
 
             }
-
+*/
             if ((player.angle * (180 / Math.PI) > 90) || ((player.angle * (180 / Math.PI) > -180) && (player.angle * (180 / Math.PI) < -90))) {
               //flip player body sprite
               player.playerBody.flipX = true;
