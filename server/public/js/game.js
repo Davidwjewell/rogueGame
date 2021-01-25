@@ -749,33 +749,69 @@ function create() {
 
 
   this.socket.on('playerUpdates', function(players) {
-    Object.keys(players).forEach(function(id) {
+
+    var lengthOfPlayerData = players.length;
+    for (var i=0; i< lengthOfPlayerData; i++) {
       self.players.getChildren().forEach(function(player) {
-        if (players[id].playerId === player.playerId) {
+        if (players[i].id === player.playerId) {
 
-          var localTimePlayer = Date.now();
+          player.angle = players[i].angle;
+
+
           
-          //set new updates to player   
-          player.moving = players[id].moving;
-          player.roll = players[id].roll;
-          player.angle = players[id].angle;
-          player.hit = players[id].hit;
-          player.hearts = players[id].hearts;
-          player.alive = players[id].alive;
-          player.respawn = players[id].respawn;
-          player.gunSprite.setRotation(player.angle);
-          player.coins = players[id].coins;
-
-
-          //update target x // target y and duration since last update
-          var duration = (localTimePlayer - player.lastUpdateTime);
-
-
-          var targetX = players[id].x;
-          var targetY = players[id].y;
-
-
+          if (players[i].setAsAlive)
+            {
+              console.log('set alive');
+              player.alive=true;
+              
+            }
+          
+          if (players[i].setReSpawn)
+            {
+              console.log('set respawn');
+              player.respawn=true;
+              
+            }
+          
+          if (players[i].setAsHit)
+            {
+              console.log('set as hit');
+              player.hit=true;
+            }
+          
+          if (players[i].setAsDead)
+            {
+              console.log('set as dead');
+              player.alive=false;
+            }
+          
+          if (players[i].setRoll)
+            {
+              console.log('roll');
+              player.roll=true;
+            }
+          
+          if (players[i].setUpdateHearts)
+            {
+             
+              console.log('update hearts');
+             
+              player.hearts=players[i].setUpdateHearts;   
+              console.log(players[i].setUpdateHearts);
+            }
+          
+          if (players[i].setUpdateCoins)
+            {
+              console.log('update coins');
+              player.coins=players[i].setUpdateCoins;
+            }
+          
+            
+          //player.coins = players[i].coins;
+          
+         
           if (!player.alive) {
+            console.log('player dead');
             if (player.playDeathAnimation) {
               player.playDeathAnimation = false;
               player.gunSprite.setVisible(false);
@@ -790,7 +826,8 @@ function create() {
           }
 
           if (player.respawn) {
-
+            player.respawn=false;
+            console.log('respawn');
             player.playerBody.setVisible(true);
             player.gunSprite.setVisible(true);
 
@@ -803,32 +840,27 @@ function create() {
           }
 
           if (player.alive) {
-
-            if (!player.lastUpdateTime) {
-     
-              player.setPosition(targetX, targetY);
-
-            }
-               else
-            {
             
-               player.setPosition(targetX, targetY);
+                  
+          let targetX = players[i].x;
+          let targetY = players[i].y;
+          
+          if (targetX === player.x && targetY === player.y)
+            {
+              player.moving=false;   // Player in same position
             }
-            /*
-         
-            else {
+          else
+            {
+              player.moving=true; // Player Moving  
               
-           
-              var tween = self.tweens.add({
-                targets: player,
-                x: targetX,
-                y: targetY,
-
-                duration: duration,
-              });
-
             }
-*/
+          
+
+               player.setPosition(targetX, targetY);
+            player.gunSprite.setRotation(player.angle);
+            
+
+
             if ((player.angle * (180 / Math.PI) > 90) || ((player.angle * (180 / Math.PI) > -180) && (player.angle * (180 / Math.PI) < -90))) {
               //flip player body sprite
               player.playerBody.flipX = true;
@@ -838,18 +870,23 @@ function create() {
               player.gunSprite.flipY = false;
 
             }
-
+            
             if (player.roll) {
+              //player.roll=false;
               if (player.playRollAnimation) {
                 player.playRollAnimation = false;
                 player.playerBody.anims.play('playerRoll', false).once('animationcomplete', () => {
+                  console.log('animation complete');
                   player.playRollAnimation = true;
+                  player.roll=false;
 
                 });
 
               }
 
-            } else {
+            } 
+            else 
+            {
               //if moving play move animation
               if (player.moving) {
 
@@ -857,22 +894,23 @@ function create() {
               } else
               //play idle animation
               {
-                player.playerBody.anims.play('playerIdle', true);
+               player.playerBody.anims.play('playerIdle', true);
 
               }
             }
 
 
           }
-          player.lastUpdateTime = localTimePlayer;
-
+ 
 
         }
         //set this updatetime to last updatetime 
 
 
       });
-    });
+      
+      
+    }
   });
 
   this.socket.on('doorOpen', function() {

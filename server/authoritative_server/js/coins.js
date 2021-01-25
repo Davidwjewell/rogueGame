@@ -20,6 +20,7 @@ function coinPickup(coins,player)
    coins.touched=true;
   
    player.coins++;
+    player.setUpdateCoins=true;
   
   coinArray[coins.id].touched=coins.touched;
   coinArray[coins.id].spin=coins.spin;

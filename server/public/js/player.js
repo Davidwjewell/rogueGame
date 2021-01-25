@@ -51,6 +51,7 @@ class Player extends Phaser.GameObjects.Container {
     this.playerName.y=this.y-15;
 
     if (this.hit) {
+      this.hit=false;
       if (this.showInvun) {
 
         if (this === scene.newPlayerLocal) {
@@ -68,10 +69,11 @@ class Player extends Phaser.GameObjects.Container {
           scene.tweens.add({
             targets: this,
             alpha: 1,
-            duration: 200,
+            duration: 100,
             ease: 'Linear',
             repeat: 5,
             onComplete: function(tween, player) {
+              
               //set player show invunerability to true
               //show flashing again
               player[0].showInvun = true;

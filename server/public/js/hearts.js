@@ -21,6 +21,7 @@ for (var i=0; i<player.totalHearts; i++)
 //add 3 hearts after respawning
 function respawnHearts(scene,player)
 {
+  console.log('re spawn hearts');
   var heartgroup=scene.hearts.getChildren(); 
   for (var i=0; i< player.totalHearts; i++)
     {
@@ -31,6 +32,7 @@ function respawnHearts(scene,player)
 //show grey hearts over red
 function updateHearts(scene,player)
 {
+  console.log('lose heart');
     var totalHearts = player.totalHearts;
     var heartgroup=scene.hearts.getChildren();
     for (var i=totalHearts-1; i>player.hearts-1;i--)

@@ -9,14 +9,20 @@ class Player extends Phaser.GameObjects.Container{
     this.alive=true;  
     this.hit=false;  
     this.coins=0;
-    this.name=name;  
-    //this.health=150;
+    this.name=name;
+    this.setAsAlive=false;
+    this.setReSpawn=false; 
+    this.setAsHit=false;
+    this.setAsDead=false;
+    this.setRoll=false;
+    this.setUpdateHearts=false;  
+    this.setUpdateCoins=false;  
     this.fireTime=0;
     this.fireDelay=300;
     this.roll=false;
     this.angle=0;
     this.invunerable=false;
-    this.invunerableTimer=1000;
+    this.invunerableTimer=500;
     this.checkInvunerable=true;  
     this.timeOfDeath;
     this.deathTimeOut=2000;  
@@ -52,16 +58,19 @@ function playerTouched(enemy, player)
   if (!player.invunerable)
     {
           player.invunerable=true;
-          player.hearts--;  
+          player.hearts--;
+          player.setUpdateHearts=true;
     }
   
   if (player.hearts==0)
     {
       player.alive=false;
+      player.setAsDead=true;
     }
   else
     {
       player.hit=true;
+      player.setAsHit=true;
     }
   
   
@@ -92,15 +101,25 @@ function playerTouched(enemy, player)
       bullet.disableBody(true,true);   
       }
       
-      player.hearts--;
+        
+         if (!player.invunerable)
+    {
+          player.invunerable=true;
+          player.hearts--;  
+          player.setUpdateHearts=true;
+    }
+        
+        
        
-      if (player.hearts==0)
+      if (player.hearts===0)
         {
           player.alive=false;
+          player.setAsDead=true;
         }
         else
          {
-          player.hit=true;   
+          player.hit=true;
+          player.setAsHit=true; 
          }
       
       }

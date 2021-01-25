@@ -1,3 +1,4 @@
+
 const players = {};
 const enemiesArray = {};
 const bulletArray = {};
@@ -301,6 +302,9 @@ if (this.gameController.gameOver)
         player.hearts = 3;
         player.setPosition(x, y);
         player.respawn = true;
+        //set player states to client
+        player.setAsAlive=true;
+        player.setReSpawn=true;
       }
 
     }
@@ -340,6 +344,7 @@ if (this.gameController.gameOver)
           if (inputInfo.up && inputInfo.mouseRight && (!inputInfo.left && !inputInfo.right)) {
 
             player.roll = true;
+            player.setRoll=true;
             player.body.setVelocityY(-player.rollspeed);
 
             player.playerBody.anims.play('playerRoll', false).once('animationcomplete', () => {
@@ -353,6 +358,7 @@ if (this.gameController.gameOver)
             //roll left and up 
 
             player.roll = true;
+            player.setRoll=true;
             player.body.setVelocityY(-player.rollspeed);
             player.body.setVelocityX(-player.rollspeed);
 
@@ -366,6 +372,7 @@ if (this.gameController.gameOver)
             //roll right and up
 
             player.roll = true;
+            player.setRoll=true;
             player.body.setVelocityY(-player.rollspeed);
             player.body.setVelocityX(player.rollspeed);
 
@@ -390,6 +397,7 @@ if (this.gameController.gameOver)
         if (inputInfo.down) {
           if (inputInfo.down && (inputInfo.mouseRight) && !(inputInfo.left && inputInfo.right)) {
             player.roll = true;
+            player.setRoll=true;
             player.body.setVelocityY(player.rollspeed);
 
             player.playerBody.anims.play('playerRoll', false).once('animationcomplete', () => {
@@ -400,6 +408,7 @@ if (this.gameController.gameOver)
           } else if (inputInfo.down && inputInfo.left && (inputInfo.mouseRight)) {
             //roll left and up    
             player.roll = true;
+            player.setRoll=true;
             player.body.setVelocityY(player.rollspeed);
             player.body.setVelocityX(-player.rollspeed);
 
@@ -413,6 +422,7 @@ if (this.gameController.gameOver)
             //roll right and up
 
             player.roll = true;
+            player.setRoll=true;
             player.body.setVelocityY(-player.rollspeed);
             player.body.setVelocityX(player.rollspeed);
 
@@ -437,6 +447,7 @@ if (this.gameController.gameOver)
 
           if (inputInfo.left && (inputInfo.mouseRight) && (!inputInfo.up && !inputInfo.down)) {
             player.roll = true;
+            player.setRoll=true;
             player.body.setVelocityX(-player.rollspeed);
 
             player.playerBody.anims.play('playerRoll', false).once('animationcomplete', () => {
@@ -454,6 +465,7 @@ if (this.gameController.gameOver)
         if (inputInfo.right) {
           if (inputInfo.right && (inputInfo.mouseRight) && (!inputInfo.up && !inputInfo.down)) {
             player.roll = true;
+            player.setRoll=true;
             player.body.setVelocityX(player.rollspeed);
 
             player.playerBody.anims.play('playerRoll', false).once('animationcomplete', () => {
@@ -531,9 +543,10 @@ if (this.gameController.gameOver)
     player.respawn = false;
   });
 
+   const playerDataAllPlayers=getPlayerDataToSend(this);
 
   //this.physics.world.wrap(this.players, 5);
-   io.emit('playerUpdates', players);
+   io.emit('playerUpdates', playerDataAllPlayers);
   ////
   ////
 
@@ -998,6 +1011,61 @@ function removePlayer(self, playerId) {
       player.destroy();
     }
   });
+}
+
+
+function getPlayerDataToSend(self)
+{
+ 
+  const playerArray=[];
+  
+  self.players.getChildren().forEach((player) =>{
+
+    var dataToSend={
+      id:player.playerId, // required
+      x:player.x, //required
+      y:player.y, //required
+      angle: player.angle, // required
+     // hearts: player.hearts, // required
+      //coins: player.coins, //required
+      // Conditional data
+     // ... (player.moving && {moving : player.moving}),
+     // ... (player.hit && {hit : player.hit}),
+      ...(player.setUpdateCoins && {setUpdateCoins : player.coins}),
+      ...(player.setAsAlive && {setAsAlive : player.alive}),
+      ... (player.setReSpawn && {setReSpawn : player.setReSpawn}),
+      
+      ...(player.setAsHit && { setAsHit : player.setAsHit}),
+      ...(player.setAsDead && {setAsDead : player.setAsDead}),
+      ...(player.setRoll && {setRoll : player.setRoll}),
+      ...(player.setUpdateHearts && {setUpdateHearts : player.hearts})
+    //  ... (player.alive && {alive : player.alive}),
+     //  ...(!player.alive && {alive : player.alive}),
+     // ... (player.respawn && {respawn : player.respawn}),
+     // ... (!player.respawn && {respawn : player.respawn}),
+    //  ... (player.roll && {roll : player.roll})
+                
+    };
+    
+
+    
+    player.setAsAlive=false;
+    player.setReSpawn=false;
+    player.setAsHit=false;
+    player.setAsDead=false;
+    player.setRoll=false;
+    player.setUpdateHearts=false;
+    player.setUpdateCoins=false;
+     
+    playerArray.push(dataToSend);
+    
+    
+  });
+  
+  
+  return playerArray;
+  
+  
 }
 
 
