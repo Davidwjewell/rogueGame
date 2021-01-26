@@ -7,7 +7,9 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
         this.id=id;
         this.speed=500;
         this.hit=false;
-        this.playFiredId=null;
+        this.angle=0;
+        this.playFiredId=null;      
+    
     }
 }
 
@@ -24,21 +26,22 @@ class EnemyBulletSkeleton extends Phaser.Physics.Arcade.Sprite{
 }
 
 
-function bulletCollide(bullets)
+function bulletCollide(bullet)
 {
    // bullets.destroy();
-if (!bullets.hit)
+if (!bullet.hit)
   {
    
-
+/*
   if (bulletArray[bullets.id])
    {
   
   bulletArray[bullets.id].hitX=bullets.x;
   bulletArray[bullets.id].hitY=bullets.y;  
    }
+  */
     
-    bullets.hit=true;
+    bullet.hit=true;
   }
   
 }
@@ -49,8 +52,8 @@ function bulletCollideEnemy(bullet)
   if (!bullet.hit)
   {
   bullet.hit=true;
-  bulletArrayEnemy[bullet.id].hitX=bullet.x;
-  bulletArrayEnemy[bullet.id].hitY=bullet.y;  
+  //bulletArrayEnemy[bullet.id].hitX=bullet.x;
+  //bulletArrayEnemy[bullet.id].hitY=bullet.y;  
   }
   
 }

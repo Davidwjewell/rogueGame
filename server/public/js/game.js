@@ -34,6 +34,7 @@ function preload() {
   this.load.image('coin', './assets/coin_sprite.png');
   this.load.multiatlas('doorSprites', 'assets/door.json', 'assets');
   this.load.image('portalHidden', './assets/portal animation_Animation 2_00.png');
+  this.load.image('scatterGun', './assets/scatterGun.png');
 }
 
 function create() {
@@ -474,12 +475,17 @@ function create() {
     });
   });
 
-  this.socket.on('createBullet', function(bullet) {
+  this.socket.on('createBullet', function(bulletData) {
+    let length=bulletData.length;
+    
+    for (var i=0; i<length; i++)
+      {
+         let newBullet = new Bullet(self, bulletData[i].x, bulletData[i].y, bulletData[i].id);
+         newBullet.setRotation(bulletData[i].angle);
+         self.bullets.add(newBullet);
+      }
 
-    let newBullet = new Bullet(self, bullet.x, bullet.y, bullet.id);
-
-    newBullet.setRotation(bullet.angle);
-    self.bullets.add(newBullet);
+   
   });
 
   this.socket.on('createBulletEnemy', function(enemyBullet) {
@@ -685,22 +691,40 @@ function create() {
 
 
   this.socket.on('bulletUpdates', function(bulletData) {
+    const length=bulletData.length;
+   
     self.bullets.getChildren().forEach(function(bullet) {
 
-      if (bulletData.id === bullet.id) {
+       for (var i=0;i<length;i++)
+      {
+      if (bulletData[i].id === bullet.id) {
         //create rectangle for debugging
         //let render = self.add.graphics();
         //let bounds = bullet.getBounds();
 
         //render.lineStyle(3, 0xffff37);
         //render.strokeRectShape(bounds);
-        var localTime = Date.now();
+        //var localTime = Date.now();
 
-        var targetX = bulletData.x;
-        var targetY = bulletData.y;
-        var duration = (localTime - bullet.lastUpdateTime);
-        var hit = bulletData.hit;
+        var targetX = bulletData[i].x;
+        var targetY = bulletData[i].y;
+       // var duration = (localTime - bullet.lastUpdateTime);
 
+         bullet.setPosition(targetX, targetY);
+        
+         if (bulletData[i].hit) {
+
+                var bulletHit = self.add.sprite(bullet.x, bullet.y, 'playerSprites', 'on hit_on hit_0.png');
+                bulletHit.anims.play('bulletHit', true).on('animationcomplete', () => {
+                  bulletHit.destroy();
+                });
+
+
+                bullet.destroy();
+
+              }
+      
+/*
         if (!bullet.lastUpdateTime) {
           bullet.setPosition(targetX, targetY);
         } else {
@@ -729,14 +753,17 @@ function create() {
           });
 
         }
-
-        bullet.lastUpdateTime = localTime;
+*/
+        //bullet.lastUpdateTime = localTime;
+        break;
 
       }
 
 
+      }
       //
     });
+  
 
     //  });
 

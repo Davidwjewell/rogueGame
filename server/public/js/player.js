@@ -33,7 +33,8 @@ class Player extends Phaser.GameObjects.Container {
     this.playerName.setOrigin(0.5,0.5);
     
 
-    this.gunSprite = scene.add.sprite(0, 0, 'playerSprites', 'main gun_Gun_0.png');
+   // this.gunSprite = scene.add.sprite(0, 0, 'playerSprites', 'main gun_Gun_0.png');
+    this.gunSprite=new ScatterGun(scene,0,0);
 
     this.gunSprite.setSize(10, 15, true);
 

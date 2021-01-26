@@ -57,6 +57,7 @@ function preload() {
   this.load.multiatlas('banditSprites', 'assets/bandit.json', 'assets');
   this.load.multiatlas('doorSprites', 'assets/door.json', 'assets');
   this.load.image('portalHidden', './assets/portal animation_Animation 2_00.png');
+  this.load.image('scatterGun' ,'./assets/scatterGun.png');
 
 }
 
@@ -65,6 +66,7 @@ function create() {
   this.physics.world.setFPS(60);
   this.players = this.physics.add.group();
   this.bullets = this.physics.add.group();
+  this.bullets.defaults = {};
   this.enemies = this.physics.add.group();
   this.enemyBullets = this.physics.add.group();
   this.coins = this.physics.add.group();
@@ -481,39 +483,54 @@ if (this.gameController.gameOver)
         }
 
         if (inputInfo.mouseLeft) {
-          if ((time - player.fireTime > player.fireDelay || player.fireTime == 0)) {
-
-            player.fireTime = time;
+          //if ((time - player.fireTime > player.fireDelay || player.fireTime == 0)) {
+           if ((time - player.fireTime > player.weaponEquip.fireDelay || player.fireTime == 0)) {
+             
+             const bulletsToAdd=[];
+             const angles=[];
+             player.fireTime = time;
+             let offSet=5;
+             let offSetRadians = Phaser.Math.DegToRad(offSet);
+             
+             
+             //get 3 angles for offset of shots
+             angles.push(inputInfo.angle-offSetRadians);
+             angles.push(inputInfo.angle);
+             angles.push(inputInfo.angle+offSetRadians)
+             //var rad = Phaser.Math.DegToRad(deg);
+             
+             
+             
+             
+             for (var i=0; i< player.weaponEquip.projectiles; i++)
+               
+               {
 
             var bulletId = bulletCounter;
             bulletCounter++;
 
             var newBullet = new Bullet(this, player.x, player.y, bulletId);
             newBullet.playerFiredId = player.playerId;
+            //newBullet.angle=inputInfo.angle;  
+            newBullet.angle=angles[i];     
             newBullet.setSize(10, 10, true);
-
+             this.physics.velocityFromRotation(newBullet.angle, newBullet.speed, newBullet.body.velocity);
             this.bullets.add(newBullet);
+             
+             let bulletDataToSend={
+                 x: newBullet.x,
+                 y: newBullet.y,
+                 id: newBullet.id,
+                 angle: newBullet.angle
+             };
+             
+            bulletsToAdd.push(bulletDataToSend);
+               
+               }
 
-            bulletArray[newBullet.id] = {
-              x: newBullet.x,
-              y: newBullet.y,
-              id: newBullet.id,
-              angle: inputInfo.angle,
-              hit: null,
-              hitX: null,
-              hitY: null
-            };
-
-
-
-
-
-
-            this.bullets.add(newBullet);
-            this.physics.moveTo(newBullet, inputInfo.pointerX, inputInfo.pointerY, newBullet.speed);
-
-            io.emit('createBullet', bulletArray[newBullet.id]);
-
+            io.emit('createBullet', bulletsToAdd);
+              
+               
 
           }
 
@@ -552,6 +569,8 @@ if (this.gameController.gameOver)
 
 
   if (this.bullets.getLength() > 0) {
+    
+    const bulletArrayDataToSend=[];
     this.bullets.getChildren().forEach(function(bullet) {
 
 
@@ -561,24 +580,25 @@ if (this.gameController.gameOver)
           id: bullet.id,
           x: bullet.x,
           y: bullet.y,
-          hit: bullet.hit
+          ...(bullet.hit && {hit : bullet.hit})        
         };
 
-      io.emit('bulletUpdates', bulletData)
+      bulletArrayDataToSend.push(bulletData);
+      //io.emit('bulletUpdates', bulletData)
 
       if (bullet.hit) {
 
-        bulletsDeleteArray.push(bullet.id);
+        //bulletsDeleteArray.push(bullet.id);
         bullet.destroy();
 
       }
     });
 
-    //io.emit('bulletUpdates', bulletArrayDataSend);
+    io.emit('bulletUpdates', bulletArrayDataToSend);
 
   }
 
-
+/*
   if (bulletsDeleteArray) {
 
     for (var i = 0; i < bulletsDeleteArray.length; i++) {
@@ -588,7 +608,7 @@ if (this.gameController.gameOver)
 
   }
 
-
+*/
 
 
 
