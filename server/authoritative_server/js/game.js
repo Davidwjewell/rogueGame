@@ -58,6 +58,7 @@ function preload() {
   this.load.multiatlas('doorSprites', 'assets/door.json', 'assets');
   this.load.image('portalHidden', './assets/portal animation_Animation 2_00.png');
   this.load.image('scatterGun' ,'./assets/scatterGun.png');
+  this.load.image('laserAutoRifle', './assets/laserAutoRifle.png');
 
 }
 
@@ -484,63 +485,29 @@ if (this.gameController.gameOver)
 
         if (inputInfo.mouseLeft) {
           //if ((time - player.fireTime > player.fireDelay || player.fireTime == 0)) {
-           if ((time - player.fireTime > player.weaponEquip.fireDelay || player.fireTime == 0)) {
-             
-             const bulletsToAdd=[];
-             const angles=[];
-             player.fireTime = time;
-             let offSet=5;
-             let offSetRadians = Phaser.Math.DegToRad(offSet);
-             
-             
-             //get 3 angles for offset of shots
-             angles.push(inputInfo.angle-offSetRadians);
-             angles.push(inputInfo.angle);
-             angles.push(inputInfo.angle+offSetRadians)
-             //var rad = Phaser.Math.DegToRad(deg);
-             
-             
-             
-             
-             for (var i=0; i< player.weaponEquip.projectiles; i++)
-               
-               {
+         //player.firingWeapon=true;
+           if ((time - player.fireTime > player.weaponEquip.fireDelay || player.fireTime == 0)) 
+             {
+                   
+                   player.weaponEquip.fireWeapon(this,player,time,inputInfo,io);
+            }
 
-            var bulletId = bulletCounter;
-            bulletCounter++;
-
-            var newBullet = new Bullet(this, player.x, player.y, bulletId);
-            newBullet.playerFiredId = player.playerId;
-            //newBullet.angle=inputInfo.angle;  
-            newBullet.angle=angles[i];     
-            newBullet.setSize(10, 10, true);
-             this.physics.velocityFromRotation(newBullet.angle, newBullet.speed, newBullet.body.velocity);
-            this.bullets.add(newBullet);
+            }
+        else  //not firing weapon
+            {
+                 if (player.weaponEquip.resetGroup)
+                   {
+                     console.log('reset group');
+                     player.weaponEquip.resetGroup=false;
+                     player.weaponEquip.shotsFiredInGroup=0;                     
+                   }
+                // player.firingWeapon=false;
              
-             let bulletDataToSend={
-                 x: newBullet.x,
-                 y: newBullet.y,
-                 id: newBullet.id,
-                 angle: newBullet.angle
-             };
-             
-            bulletsToAdd.push(bulletDataToSend);
-               
-               }
-
-            io.emit('createBullet', bulletsToAdd);
-              
-               
-
-          }
+            }
 
         }
 
       }
-
-
-      //
-    }
 
 
 

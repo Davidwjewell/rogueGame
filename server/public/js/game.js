@@ -35,6 +35,7 @@ function preload() {
   this.load.multiatlas('doorSprites', 'assets/door.json', 'assets');
   this.load.image('portalHidden', './assets/portal animation_Animation 2_00.png');
   this.load.image('scatterGun', './assets/scatterGun.png');
+  this.load.image('laserAutoRifle', './assets/laserAutoRifle.png');
 }
 
 function create() {
