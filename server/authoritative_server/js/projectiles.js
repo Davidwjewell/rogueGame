@@ -7,10 +7,27 @@ class Bullet extends Phaser.Physics.Arcade.Sprite {
         this.id=id;
         this.speed=500;
         this.hit=false;
-        this.angle=0;
+       
         this.playFiredId=null;      
     
     }
+}
+
+class RailGunProjectile extends Phaser.Physics.Arcade.Body
+{
+   constructor(scene,x,y)
+  {
+     super(scene,x,y);
+     scene.physics.add.existing(this);
+     this.angle;
+     this.hit=false;
+    
+    
+  }
+ 
+  
+  
+  
 }
 
 class EnemyBulletSkeleton extends Phaser.Physics.Arcade.Sprite{
@@ -32,15 +49,6 @@ function bulletCollide(bullet)
 if (!bullet.hit)
   {
    
-/*
-  if (bulletArray[bullets.id])
-   {
-  
-  bulletArray[bullets.id].hitX=bullets.x;
-  bulletArray[bullets.id].hitY=bullets.y;  
-   }
-  */
-    
     bullet.hit=true;
   }
   
@@ -52,8 +60,7 @@ function bulletCollideEnemy(bullet)
   if (!bullet.hit)
   {
   bullet.hit=true;
-  //bulletArrayEnemy[bullet.id].hitX=bullet.x;
-  //bulletArrayEnemy[bullet.id].hitY=bullet.y;  
+  
   }
   
 }
