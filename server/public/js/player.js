@@ -23,6 +23,7 @@ class Player extends Phaser.GameObjects.Container {
     this.totalHearts = 3;
     this.setSize(10, 15);
     this.inputInfo;
+    this.prevAngle=0;
     // scene.physics.world.enable(this);
     
     this.playerName = scene.add.text(this.x,this.y-15,this.name);

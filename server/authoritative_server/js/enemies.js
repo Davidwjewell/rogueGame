@@ -142,6 +142,27 @@ function enemyCollide(bullet, enemy) {
 }
 
 
+function enemyCollideRailProjectile(railProjectile, enemy)
+{
+  if (!railProjectile.hit)
+  {
+    if (!enemy.hit) {
+      enemy.hit = true;
+      enemy.health -= 50;
+      
+
+    }
+
+    if (enemy.health <= 0) {
+      enemy.death = true;
+    }
+    
+  }
+
+  
+}
+
+
 function setGunAngle(enemy) {
 
   enemy.angle = Phaser.Math.Angle.Between(enemy.x, enemy.y, enemy.target.x, enemy.target.y);

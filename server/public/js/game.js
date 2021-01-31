@@ -770,6 +770,21 @@ function create() {
 
 
   });
+  
+  
+  this.socket.on('createRailEffect', function(railData){
+
+   console.log('show rail');
+    //var railSize=Phaser.Math.Distance.Between(railData.startX,railData.startY,railData.x,railData.y);
+    //console.log(railSize)
+    let railLine=self.add.line(0,0,railData.startX,railData.startY,railData.x,railData.y,0xff0000);
+    railLine.setOrigin(0,0);
+    //self.add.existing(railLine); 
+    //var railSprite=self.add.sprite(railData.startX,railData.startY,'bullet');
+    //railSprite.setRotation(railData.angle);
+   // railSprite.setDisplaySize(railSize,railSize);
+
+  });
 
 
 
@@ -1020,29 +1035,53 @@ function update(time, delta, self) {
   //if player ready
   if (this.newPlayerLocal && this.newPlayerLocal.alive) {
 
+    let sendNewAngle=false;
+
+    
     this.scoreText.setText(this.newPlayerLocal.coins);
 
     pointerMove(this, this.input.activePointer, this.cameras.main);
+    
+    if (this.newPlayerLocal.angle !== this.newPlayerLocal.prevAngle)
+      {
+        //Send new player angle
+        console.log('new angle');
+        sendNewAngle=true;
+        
+      }
+    
 
+    
+    
 
     var inputInfo = {
+      //Conditional data      
+      ...(sendNewAngle && {angle: this.newPlayerLocal.angle}),    
+      ...(cursors.up.isDown && {up : true}),
+      ...(cursors.down.isDown && {down : true}),
+      ...(cursors.left.isDown && {left : true}),
+      ...(cursors.right.isDown && {right : true}),
+      ...(mouse.rightButtonDown() && {mouseRight : true}),
+      ...(mouse.leftButtonDown() && {mouseLeft : true}),
 
-      up: cursors.up.isDown,
-      down: cursors.down.isDown,
-      left: cursors.left.isDown,
-      right: cursors.right.isDown,
-      mouseRight: mouse.rightButtonDown(),
-      mouseLeft: mouse.leftButtonDown(),
-      angle: this.newPlayerLocal.angle,
-      pointerX: this.input.activePointer.x + this.cameras.main.scrollX,
-      pointerY: this.input.activePointer.y + this.cameras.main.scrollY
     }
+    
+    
+  
 
 
+  //store previous angle
+    this.newPlayerLocal.prevAngle=this.newPlayerLocal.angle;
 
 
-
+    if (!isEmpty(inputInfo))
+      {        
     this.socket.emit('playerInput', inputInfo);
+      }
+    //else
+      //{
+        //console.log('no data sent');       
+      //}
 
 
   }
@@ -1062,6 +1101,13 @@ function update(time, delta, self) {
   });
 
 
+}
+
+function isEmpty(obj) { 
+   for (var x in obj) {
+     return false; 
+   }
+   return true;
 }
 
 function pointerMove(self, pointer, camera) {

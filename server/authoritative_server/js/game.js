@@ -68,6 +68,7 @@ function create() {
   this.players = this.physics.add.group();
   this.bullets = this.physics.add.group();
   this.bullets.defaults = {};
+  this.railProjectiles=this.add.group();
   this.enemies = this.physics.add.group();
   this.enemyBullets = this.physics.add.group();
   this.coins = this.physics.add.group();
@@ -124,7 +125,10 @@ function create() {
   this.physics.add.collider(this.enemies, this.wallLayer);
   this.physics.add.collider(this.enemies, this.enemies);
   this.physics.add.collider(this.bullets, this.wallLayer, bulletCollide, null, this);
+  this.physics.add.collider(this.railProjectiles, this.wallLayer, railProjectileCollide, null, this);
   this.physics.add.collider(this.enemyBullets, this.wallLayer, bulletCollideEnemy, null, this);
+  this.physics.add.overlap(this.bullets, this.enemies, enemyCollide, null, this);
+  this.physics.add.overlap(this.railProjectiles, this.enemies, enemyCollideRailProjectile, null, this);
   this.physics.add.overlap(this.bullets, this.enemies, enemyCollide, null, this);
   this.physics.add.overlap(this.bullets, this.players, playerShot, null, this);
   this.physics.add.overlap(this.enemyBullets, this.players, playerShot, null, this);
@@ -258,6 +262,7 @@ function create() {
 
     // when a player moves, update the player data
     socket.on('playerInput', function(inputData) {
+      //console.log(inputData);
       handlePlayerInput(self, socket.id, inputData);
     });
   });
@@ -283,8 +288,13 @@ if (this.gameController.gameOver)
     {
 
   this.players.getChildren().forEach((player) => {
+    
+    
     const inputInfo = players[player.playerId].input;
+    
+   
 
+    
     if (!player.alive) {
       player.body.setEnable(false);
       if (player.checkDeath) {
@@ -335,7 +345,11 @@ if (this.gameController.gameOver)
 
       if (!player.roll) {
 
-        player.angle = inputInfo.angle;
+        if (inputInfo.angle)
+          {
+            player.angle = inputInfo.angle;
+          }
+        
         player.moving = false;
         player.body.setVelocity(0);
 
@@ -484,6 +498,8 @@ if (this.gameController.gameOver)
         }
 
         if (inputInfo.mouseLeft) {
+         
+        
           //if ((time - player.fireTime > player.fireDelay || player.fireTime == 0)) {
          //player.firingWeapon=true;
            if ((time - player.fireTime > player.weaponEquip.fireDelay || player.fireTime == 0)) 
@@ -510,7 +526,7 @@ if (this.gameController.gameOver)
       }
 
 
-
+/*
     players[player.playerId].x = player.x;
     players[player.playerId].y = player.y;
     players[player.playerId].moving = player.moving;
@@ -521,10 +537,14 @@ if (this.gameController.gameOver)
     players[player.playerId].respawn = player.respawn;
     players[player.playerId].coins = player.coins;
     players[player.playerId].roll = player.roll;
+    */
 
     //players[player.playerId].rotation = player.rotation;
     player.hit = false;
     player.respawn = false;
+    inputInfo.mouseLeft=false;
+    inputInfo.mouseRight=false;
+    
   });
 
    const playerDataAllPlayers=getPlayerDataToSend(this);
@@ -563,6 +583,31 @@ if (this.gameController.gameOver)
 
     io.emit('bulletUpdates', bulletArrayDataToSend);
 
+  }
+      
+  if (this.railProjectiles.getLength() > 0) {
+    
+     const bulletArrayDataToSend=[];
+     this.railProjectiles.getChildren().forEach(function(rail) {
+     
+           var railData={
+             id:rail.id,
+             x:rail.x,
+             y:rail.y,
+             ...(rail.hit && {hit : rail.hit}) 
+           };
+          
+        bulletArrayDataToSend.push(railData);
+            
+          if (rail.hit)
+            {
+              rail.destroy();
+            }
+           
+         
+     });
+    
+     io.emit('bulletUpdates', bulletArrayDataToSend);
   }
 
 /*
@@ -978,12 +1023,10 @@ function randomPosition(max) {
 }
 
 function handlePlayerInput(self, playerId, input) {
-  self.players.getChildren().forEach((player) => {
-    if (playerId === player.playerId) {
-      players[player.playerId].input = input;
-      players[player.playerId].roll = input.roll;
-    }
-  });
+ 
+  
+  players[playerId].input=input;
+
 }
 
 function addPlayer(self, playerInfo) {

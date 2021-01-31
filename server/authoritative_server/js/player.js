@@ -39,7 +39,8 @@ class Player extends Phaser.GameObjects.Container{
 
     //this.gunSprite=scene.physics.add.sprite(0,0,'playerSprites','main gun_Gun_0.png'); 
     //this.weaponEquip=new ScatterGun({scene:scene,x:0,y:0});  
-    this.weaponEquip=new LaserAutomaticRifle({scene:scene,x:0,y:0});
+    //this.weaponEquip=new LaserAutomaticRifle({scene:scene,x:0,y:0});
+    this.weaponEquip=new RailGun({scene:scene,x:0,y:0});  
   
     this.playerBody=scene.physics.add.sprite(0,0,'playerSprites','run_run_0.png');
     this.playerBody.setSize(10,15,true);

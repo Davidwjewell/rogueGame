@@ -142,8 +142,8 @@ class RailGun extends Phaser.GameObjects.Sprite {
     super(config.scene, config.x, config.y, 'laserAutoRifle');
     this.setSize(10, 15, true);
     config.scene.physics.add.existing(this);
-    this.fireDelay = 250; //fire rate
-    this.projectileVelocity = 500; //bullet speed
+    this.fireDelay = 1000; //fire rate
+    this.projectileVelocity = 1000; //bullet speed
 
   }
 
@@ -151,16 +151,26 @@ class RailGun extends Phaser.GameObjects.Sprite {
     const bulletsToAdd = [];
     var bulletId = bulletCounter;
     bulletCounter++;
-    let railProjectile = new RailGunProjectile(scene, player.x, player.y);
+    let railProjectile = new RailGunProjectile(scene, player.x, player.y, bulletId);
     railProjectile.playFiredId=player.id;
-    railProjectile.angle=inputInfo.angle;
+    railProjectile.angle=player.angle;
     railProjectile.setSize(10, 10, true);
-    scene.physics.velocityFromRotation(newBullet.angle, newBullet.speed, newBullet.body.velocity);
+    scene.physics.velocityFromRotation(railProjectile.angle, this.projectileVelocity, railProjectile.body.velocity);
+    scene.railProjectiles.add(railProjectile); 
     
+    let bulletDataToSend = {
+      x: railProjectile.x,
+      y: railProjectile.y,
+      id: railProjectile.id,
+      angle: railProjectile.angle
+    };
     
-
-
-
+    bulletsToAdd.push(bulletDataToSend);
+    
+    io.emit('createBullet', bulletsToAdd);
+    
+    player.fireTime = time;
+    
   }
 
 
